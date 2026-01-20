@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadre de Comandament - Hospital Pius de Valls</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #1e3c72;
+            border-bottom: 3px solid #1e3c72;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .kpi-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .kpi-card.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .kpi-card.info {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .kpi-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .kpi-trend {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #1e3c72;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .info-box h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 2px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <img src="data:image/png;base64,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" alt="Pius Hospital de Valls" style="height: 70px; background: white; padding: 10px; border-radius: 10px;">
+                <div>
+                    <h1 style="margin: 0;">🏥 Quadre de Comandament Executiu</h1>
+                    <p style="margin: 5px 0 0 0;">Hospital Pius de Valls - Dashboard Estratègic</p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showScreen(0)">🏠 Visió General</button>
+            <button class="nav-tab" onclick="showScreen(1)">🚑 Urgències</button>
+            <button class="nav-tab" onclick="showScreen(2)">🛏️ Hospitalització</button>
+            <button class="nav-tab" onclick="showScreen(3)">⚕️ Quiròfans</button>
+            <button class="nav-tab" onclick="showScreen(4)">📋 Consultes i Llistes</button>
+            <button class="nav-tab" onclick="showScreen(5)">⭐ Qualitat</button>
+            <button class="nav-tab" onclick="showScreen(6)">📊 Recursos</button>
+        </div>
+        
+        <div class="content">
+            <!-- PANTALLA 1: VISIÓ GENERAL -->
+            <div class="screen active" id="screen0">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Visió ràpida de l'estat global del centre amb indicadors clau d'activitat assistencial, ocupació i qualitat.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Activitat Assistencial Total</div>
+                        <div class="kpi-value">8.450</div>
+                        <div class="kpi-trend">↑ +3.2% vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Urgències Totals</div>
+                        <div class="kpi-value">245/dia</div>
+                        <div class="kpi-trend">↓ -1.2% vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Estada Mitjana</div>
+                        <div class="kpi-value">6.2 dies</div>
+                        <div class="kpi-trend">↓ -0.3 dies vs objectiu 6.5</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Reingressos <30 dies</div>
+                        <div class="kpi-value">7.1%</div>
+                        <div class="kpi-trend">↑ Objectiu: <8%</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Mortalitat Ajustada</div>
+                        <div class="kpi-value">2.0%</div>
+                        <div class="kpi-trend">Objectiu: <2.5%</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Ocupació de Llits</div>
+                        <div class="kpi-value">88.5%</div>
+                        <div class="kpi-trend">↑ +2.1% vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Intervencions Quirúrgiques</div>
+                        <div class="kpi-value">156/mes</div>
+                        <div class="kpi-trend">↑ +5.2% vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Demora Quirúrgica Mitjana</div>
+                        <div class="kpi-value">125 dies</div>
+                        <div class="kpi-trend">Objectiu: <150 dies</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Evolució Activitat Assistencial (últims 6 mesos)</div>
+                    <canvas id="chartGeneral"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 2: URGÈNCIES -->
+            <div class="screen" id="screen1">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Controlar la pressió assistencial en urgències i la capacitat de resolució del servei.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Urgències per Dia</div>
+                        <div class="kpi-value">245</div>
+                        <div class="kpi-trend">↓ -1.2% vs setmana anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Temps Mitjà Atenció</div>
+                        <div class="kpi-value">3.8h</div>
+                        <div class="kpi-trend">↑ Objectiu: <3.6h</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">% Ingressos</div>
+                        <div class="kpi-value">11.4%</div>
+                        <div class="kpi-trend">Rang esperat: 10-15%</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Retorns <3 dies</div>
+                        <div class="kpi-value">7.2%</div>
+                        <div class="kpi-trend">↑ Objectiu: <6%</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Distribució per Nivells de Triatge</div>
+                    <canvas id="chartTriatge"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Procedència dels Pacients</div>
+                    <canvas id="chartProcedencia"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 3: HOSPITALITZACIÓ -->
+            <div class="screen" id="screen2">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Avaluar l'eficiència del flux de pacients i detectar colls d'ampolla en hospitalització.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Estada Mitjana</div>
+                        <div class="kpi-value">6.2 dies</div>
+                        <div class="kpi-trend">↓ Objectiu: <6.5 dies</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Altes >15 dies</div>
+                        <div class="kpi-value">23</div>
+                        <div class="kpi-trend">↑ Objectiu: <15</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Altes >30 dies</div>
+                        <div class="kpi-value">8</div>
+                        <div class="kpi-trend">Objectiu: <5</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Reingressos <30 dies</div>
+                        <div class="kpi-value">7.1%</div>
+                        <div class="kpi-trend">Objectiu: <8%</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Mortalitat</div>
+                        <div class="kpi-value">2.0%</div>
+                        <div class="kpi-trend">Objectiu: <2.5%</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Ocupació Global</div>
+                        <div class="kpi-value">88.5%</div>
+                        <div class="kpi-trend">↑ +2.1% vs mes anterior</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Ocupació per Unitat (% llits ocupats)</div>
+                    <canvas id="chartOcupacio"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 4: QUIRÒFANS -->
+            <div class="screen" id="screen3">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Mesurar la productivitat quirúrgica i l'eficiència estructural dels quiròfans.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Intervencions Totals</div>
+                        <div class="kpi-value">156/mes</div>
+                        <div class="kpi-trend">↑ +5.2% vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Cirurgia Major Ambulatòria</div>
+                        <div class="kpi-value">45.2%</div>
+                        <div class="kpi-trend">Objectiu: >40%</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Rendiment Quiròfan</div>
+                        <div class="kpi-value">78%</div>
+                        <div class="kpi-trend">Objectiu: >75%</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Demora Quirúrgica</div>
+                        <div class="kpi-value">125 dies</div>
+                        <div class="kpi-trend">Objectiu: <150 dies</div>
+                    </div>
+                    
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Hores Quiròfan Utilitzades</div>
+                        <div class="kpi-value">156h/mes</div>
+                        <div class="kpi-trend">↑ Objectiu: >150h</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Cancel·lacions 24h</div>
+                        <div class="kpi-value">2</div>
+                        <div class="kpi-trend">Objectiu: 0</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Evolució Intervencions Quirúrgiques</div>
+                    <canvas id="chartQuirofans"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 5: CONSULTES I LLISTES -->
+            <div class="screen" id="screen4">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Avaluar l'accessibilitat del sistema i el compliment de garanties d'atenció.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Consultes Totals</div>
+                        <div class="kpi-value">4.850/mes</div>
+                        <div class="kpi-trend">↑ Objectiu: >4.500</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Espera Primera Visita</div>
+                        <div class="kpi-value">45 dies</div>
+                        <div class="kpi-trend">Objectiu: <60 dies</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Llista Espera Quirúrgica</div>
+                        <div class="kpi-value">275</div>
+                        <div class="kpi-trend">↑ Objectiu: <350</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Pacients >6 mesos</div>
+                        <div class="kpi-value">18</div>
+                        <div class="kpi-trend">Objectiu: 0</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">% Compliment 6 mesos</div>
+                        <div class="kpi-value">94.5%</div>
+                        <div class="kpi-trend">Objectiu: >95%</div>
+                    </div>
+                    
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Proves Diagnòstiques</div>
+                        <div class="kpi-value">2.150/mes</div>
+                        <div class="kpi-trend">↑ Objectiu: >2.000</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Evolució Llista Espera Quirúrgica</div>
+                    <canvas id="chartLlista"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 6: QUALITAT -->
+            <div class="screen" id="screen5">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Controlar la percepció del pacient i la seguretat assistencial del centre.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Reclamacions Mensuals</div>
+                        <div class="kpi-value">28</div>
+                        <div class="kpi-trend">↑ +3 vs mes anterior</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Satisfacció Pacients</div>
+                        <div class="kpi-value">8.2/10</div>
+                        <div class="kpi-trend">Objectiu: >8.0</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Mortalitat Ajustada</div>
+                        <div class="kpi-value">2.0%</div>
+                        <div class="kpi-trend">Objectiu: <2.5%</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Reingressos <30 dies</div>
+                        <div class="kpi-value">7.1%</div>
+                        <div class="kpi-trend">Objectiu: <8%</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Infeccions Nosocomials</div>
+                        <div class="kpi-value">1.2%</div>
+                        <div class="kpi-trend">↓ Objectiu: <2%</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Conciliació Medicació</div>
+                        <div class="kpi-value">85%</div>
+                        <div class="kpi-trend">Objectiu: >90%</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Principals Motius de Reclamació</div>
+                    <canvas id="chartReclamacions"></canvas>
+                </div>
+            </div>
+            
+            <!-- PANTALLA 7: RECURSOS -->
+            <div class="screen" id="screen6">
+                <div class="info-box">
+                    <h3>📌 Objectiu d'aquesta pantalla</h3>
+                    <p>Analitzar l'ús de recursos i la pressió sobre estructures de suport assistencial.</p>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Consum Farmàcia</div>
+                        <div class="kpi-value">285K€</div>
+                        <div class="kpi-trend">↑ Objectiu: <300K€/mes</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">% Biosimilars</div>
+                        <div class="kpi-value">68%</div>
+                        <div class="kpi-trend">Objectiu: >65%</div>
+                    </div>
+                    
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Ocupació HAD</div>
+                        <div class="kpi-value">82.5%</div>
+                        <div class="kpi-trend">12 pacients actius</div>
+                    </div>
+                    
+                    <div class="kpi-card info">
+                        <div class="kpi-label">Rehabilitació</div>
+                        <div class="kpi-value">850</div>
+                        <div class="kpi-trend">sessions/mes</div>
+                    </div>
+                    
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">Altes Pendents Gestió Social</div>
+                        <div class="kpi-value">12</div>
+                        <div class="kpi-trend">Objectiu: <8</div>
+                    </div>
+                    
+                    <div class="kpi-card success">
+                        <div class="kpi-label">Cost per Estada</div>
+                        <div class="kpi-value">3.850€</div>
+                        <div class="kpi-trend">Objectiu: <4.000€</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Evolució Consum Farmàcia (per grup terapèutic)</div>
+                    <canvas id="chartFarmacia"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>📌 Missatge clau per Direcció:</strong></p>
+            <p>"Disposem de molta informació dispersa. Aquest Quadre de Comandament permet unificar-la en un panell clar, visual i orientat a la decisió."</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">Dashboard conceptual - Dades exemple per validació d'estructura</p>
+        </div>
+    </div>
+    
+    <script>
+        // Funció per canviar de pantalla
+        function showScreen(index) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById('screen' + index).classList.add('active');
+            tabs[index].classList.add('active');
+        }
+        
+        // Gràfic Pantalla 1: Evolució Activitat
+        const ctxGeneral = document.getElementById('chartGeneral').getContext('2d');
+        new Chart(ctxGeneral, {
+            type: 'line',
+            data: {
+                labels: ['Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+                datasets: [{
+                    label: 'Urgències',
+                    data: [7200, 6800, 7400, 7600, 7800, 7350],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Ingressos',
+                    data: [820, 790, 850, 880, 900, 850],
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+        
+        // Gràfic Pantalla 2: Triatge
+        const ctxTriatge = document.getElementById('chartTriatge').getContext('2d');
+        new Chart(ctxTriatge, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nivell I (Resuscitació)', 'Nivell II (Emergència)', 'Nivell III (Urgent)', 'Nivell IV (Menys urgent)', 'Nivell V (No urgent)'],
+                datasets: [{
+                    data: [2, 8, 35, 42, 13],
+                    backgroundColor: [
+                        '#dc3545',
+                        '#fd7e14',
+                        '#ffc107',
+                        '#28a745',
+                        '#17a2b8'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+        
+        // Gràfic Pantalla 2: Procedència
+        const ctxProcedencia = document.getElementById('chartProcedencia').getContext('2d');
+        new Chart(ctxProcedencia, {
+            type: 'bar',
+            data: {
+                labels: ['Propis mitjans', '061', 'Derivació CAP', 'Altres hospitals', 'Altres'],
+                datasets: [{
+                    label: 'Pacients',
+                    data: [145, 42, 38, 12, 8],
+                    backgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Gràfic Pantalla 3: Ocupació per unitat
+        const ctxOcupacio = document.getElementById('chartOcupacio').getContext('2d');
+        new Chart(ctxOcupacio, {
+            type: 'bar',
+            data: {
+                labels: ['Conv. (48 llits)', 'HAD (12 llits)', 'UGA (10 llits)', 'Neo (11 llits)', 'Acollida (4 llits)'],
+                datasets: [{
+                    label: 'Ocupació %',
+                    data: [92, 82.5, 85, 78, 75],
+                    backgroundColor: function(context) {
+                        const value = context.parsed.y;
+                        return value > 90 ? '#f5576c' : value > 80 ? '#ffc107' : '#43e97b';
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+        
+        // Gràfic Pantalla 4: Evolució Quiròfans
+        const ctxQuirofans = document.getElementById('chartQuirofans').getContext('2d');
+        new Chart(ctxQuirofans, {
+            type: 'line',
+            data: {
+                labels: ['Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+                datasets: [{
+                    label: 'Intervencions totals',
+                    data: [142, 138, 148, 152, 158, 156],
+                    borderColor: '#1e3c72',
+                    backgroundColor: 'rgba(30, 60, 114, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'CMA',
+                    data: [62, 58, 65, 68, 72, 70],
+                    borderColor: '#43e97b',
+                    backgroundColor: 'rgba(67, 233, 123, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+        
+        // Gràfic Pantalla 5: Llista Espera
+        const ctxLlista = document.getElementById('chartLlista').getContext('2d');
+        new Chart(ctxLlista, {
+            type: 'line',
+            data: {
+                labels: ['Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+                datasets: [{
+                    label: 'Total llista espera',
+                    data: [295, 288, 278, 282, 285, 275],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Pacients >6 mesos',
+                    data: [28, 25, 22, 20, 19, 18],
+                    borderColor: '#f5576c',
+                    backgroundColor: 'rgba(245, 87, 108, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+        
+        // Gràfic Pantalla 6: Reclamacions
+        const ctxReclamacions = document.getElementById('chartReclamacions').getContext('2d');
+        new Chart(ctxReclamacions, {
+            type: 'bar',
+            data: {
+                labels: ['Temps espera', 'Atenció rebuda', 'Informació', 'Infraestructures', 'Altres'],
+                datasets: [{
+                    label: 'Reclamacions',
+                    data: [12, 8, 4, 2, 2],
+                    backgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Gràfic Pantalla 7: Farmàcia
+        const ctxFarmacia = document.getElementById('chartFarmacia').getContext('2d');
+        new Chart(ctxFarmacia, {
+            type: 'bar',
+            data: {
+                labels: ['Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+                datasets: [{
+                    label: 'Oncològics',
+                    data: [85, 88, 82, 90, 92, 87],
+                    backgroundColor: '#667eea'
+                }, {
+                    label: 'Antibiòtics',
+                    data: [45, 42, 48, 46, 50, 48],
+                    backgroundColor: '#764ba2'
+                }, {
+                    label: 'Cardiovasculars',
+                    data: [35, 38, 36, 39, 37, 40],
+                    backgroundColor: '#43e97b'
+                }, {
+                    label: 'Altres',
+                    data: [105, 98, 110, 108, 115, 110],
+                    backgroundColor: '#f5576c'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
