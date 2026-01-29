@@ -1006,30 +1006,134 @@
     </div>
 
     <script>
+        // DATOS BASE CON DESGLOSE POR GÉNERO
+        const datosBase = {
+            urgencies: {
+                tots: { en_atencio: 9, sala_espera: 3, temps_mig: 41, ingressos: 6, altes: 28 },
+                dones: { en_atencio: 5, sala_espera: 2, temps_mig: 43, ingressos: 3, altes: 15 },
+                homes: { en_atencio: 4, sala_espera: 1, temps_mig: 39, ingressos: 3, altes: 13 }
+            },
+            hospitalitzacio: {
+                tots: { planta4: 17, planta5: 24, uga: 10 },
+                dones: { planta4: 9, planta5: 13, uga: 5 },
+                homes: { planta4: 8, planta5: 11, uga: 5 }
+            },
+            quirofan: {
+                tots: { total: 4927, programades: 3520, cma: 2608 },
+                dones: { total: 2560, programades: 1830, cma: 1356 },
+                homes: { total: 2367, programades: 1690, cma: 1252 }
+            }
+        };
+
         // FILTERS
         function updateFilters() {
             const genere = document.getElementById('filterGenere').value;
             const edat = document.getElementById('filterEdat').value;
             
             let filterText = 'Desembre 2025';
-            
             if (genere !== 'tots') {
                 filterText += ' | ' + document.getElementById('filterGenere').selectedOptions[0].text;
             }
-            
             if (edat !== 'tots') {
                 filterText += ' | ' + document.getElementById('filterEdat').selectedOptions[0].text;
             }
-            
             if (genere === 'tots' && edat === 'tots') {
                 filterText += ' | Tots els filtres actius';
             }
-            
             document.getElementById('activeFilters').textContent = filterText;
             
-            // Aquí se pueden ajustar los datos según los filtros
-            // Por ahora solo actualiza el texto del filtro
-            console.log('Filtres aplicats:', { genere, edat });
+            // Aplicar filtros a los datos
+            aplicarFiltros(genere, edat);
+        }
+
+        function aplicarFiltros(genere, edat) {
+            // Obtener datos según género
+            const datos = datosBase.urgencies[genere];
+            const datosHosp = datosBase.hospitalitzacio[genere];
+            const datosQuir = datosBase.quirofan[genere];
+            
+            // Factor edad (distribución aproximada)
+            let factorEdat = 1.0;
+            if (edat === '0-18') factorEdat = 0.20;
+            else if (edat === '19-45') factorEdat = 0.26;
+            else if (edat === '46-65') factorEdat = 0.30;
+            else if (edat === '66+') factorEdat = 0.24;
+            
+            // ACTUALIZAR ESTAT ACTUAL - Urgències
+            const urgMetrics = document.querySelectorAll('#screen-estat .status-card:nth-child(1) .metric-value');
+            if (urgMetrics.length >= 4) {
+                urgMetrics[0].textContent = Math.round(datos.en_atencio * factorEdat) || datos.en_atencio;
+                urgMetrics[1].textContent = Math.round(datos.sala_espera * factorEdat) || datos.sala_espera;
+                urgMetrics[2].textContent = (Math.round(datos.temps_mig * factorEdat) || datos.temps_mig) + ' min';
+                urgMetrics[3].textContent = Math.round(datos.ingressos * factorEdat) || datos.ingressos;
+            }
+            
+            // ACTUALIZAR ESTAT ACTUAL - Hospitalització
+            const hospMetrics = document.querySelectorAll('#screen-estat .status-card:nth-child(2) .metric-value');
+            if (hospMetrics.length >= 3) {
+                hospMetrics[0].textContent = Math.round(datosHosp.planta4 * factorEdat) || datosHosp.planta4;
+                hospMetrics[1].textContent = Math.round(datosHosp.planta5 * factorEdat) || datosHosp.planta5;
+                hospMetrics[2].textContent = Math.round(datosHosp.uga * factorEdat) || datosHosp.uga;
+            }
+            
+            // ACTUALIZAR URGÈNCIES
+            const urgCards = document.querySelectorAll('#screen-urgencies .metric-card .value');
+            if (urgCards.length >= 4) {
+                urgCards[0].textContent = Math.round(datos.en_atencio * factorEdat) || datos.en_atencio;
+                urgCards[1].textContent = Math.round(datos.sala_espera * factorEdat) || datos.sala_espera;
+                urgCards[2].textContent = Math.round(datos.ingressos * factorEdat) || datos.ingressos;
+                urgCards[3].textContent = Math.round(datos.altes * factorEdat) || datos.altes;
+            }
+            
+            // ACTUALIZAR HOSPITALITZACIÓ - Planta 4
+            const planta4Val = Math.round(datosHosp.planta4 * factorEdat) || datosHosp.planta4;
+            const planta4Header = document.querySelector('.planta-card:nth-child(1) .planta-header span:nth-child(2)');
+            if (planta4Header) planta4Header.textContent = planta4Val + ' pacients';
+            
+            const planta4Stats = document.querySelectorAll('.planta-card:nth-child(1) .stat-value');
+            if (planta4Stats.length >= 3) {
+                planta4Stats[1].textContent = planta4Val;
+                planta4Stats[2].textContent = 24 - planta4Val;
+                const ocupacio4 = Math.round((planta4Val / 24) * 100);
+                const fill4 = document.querySelector('.planta-card:nth-child(1) .ocupacio-fill');
+                if (fill4) {
+                    fill4.style.width = ocupacio4 + '%';
+                    fill4.textContent = ocupacio4 + '% Ocupació';
+                }
+            }
+            
+            // ACTUALIZAR HOSPITALITZACIÓ - Planta 5
+            const planta5Val = Math.round(datosHosp.planta5 * factorEdat) || datosHosp.planta5;
+            const planta5Header = document.querySelector('.planta-card:nth-child(2) .planta-header span:nth-child(2)');
+            if (planta5Header) planta5Header.textContent = planta5Val + ' pacients';
+            
+            const planta5Stats = document.querySelectorAll('.planta-card:nth-child(2) .stat-value');
+            if (planta5Stats.length >= 3) {
+                planta5Stats[1].textContent = planta5Val;
+                planta5Stats[2].textContent = 27 - planta5Val;
+                const ocupacio5 = Math.round((planta5Val / 27) * 100);
+                const fill5 = document.querySelector('.planta-card:nth-child(2) .ocupacio-fill');
+                if (fill5) {
+                    fill5.style.width = ocupacio5 + '%';
+                    fill5.textContent = ocupacio5 + '% Ocupació';
+                }
+            }
+            
+            // ACTUALIZAR UGA
+            const ugaBoxes = document.querySelectorAll('.cens-box .cens-value');
+            if (ugaBoxes.length > 0) {
+                ugaBoxes[0].textContent = Math.round(datosHosp.uga * factorEdat) || datosHosp.uga;
+            }
+            
+            // ACTUALIZAR QUIRÒFAN
+            const quirCards = document.querySelectorAll('#screen-quirofan .metric-card .value');
+            if (quirCards.length >= 3) {
+                quirCards[0].textContent = Math.round(datosQuir.total * factorEdat) || datosQuir.total;
+                quirCards[1].textContent = Math.round(datosQuir.programades * factorEdat) || datosQuir.programades;
+                quirCards[2].textContent = Math.round(datosQuir.cma * factorEdat) || datosQuir.cma;
+            }
+            
+            console.log('✅ Filtres aplicats:', { genere, edat, factorEdat });
         }
 
         // NAVIGATION
