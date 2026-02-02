@@ -529,7 +529,7 @@
                 </div>
             </div>
             <div class="timestamp">
-                <strong>Actualitzat:</strong> <span id="currentTime">28/01/2026 22:00</span>
+                <strong>Actualitzat:</strong> <span id="currentTime">28/01/2026 22:00</span><br><span style="font-size:0.8em;color:#ff6b6b;">(*) Dades provisionals - Mockup</span>
             </div>
         </div>
 
@@ -567,6 +567,7 @@
             <button class="nav-button" onclick="showScreen('hospitalitzacio')">🏥 HOSPITALITZACIÓ</button>
             <button class="nav-button" onclick="showScreen('quirofan')">⚕️ QUIRÒFAN</button>
             <button class="nav-button" onclick="showScreen('consultes')">👨‍⚕️ CONSULTES</button>
+            <button class="nav-button" onclick="showScreen('farmacia')">💊 FARMÀCIA</button>
             <button class="nav-button" onclick="showScreen('pades')">🤲 PADES</button>
             <button class="nav-button" onclick="showScreen('historic')">📈 HISTÒRIC</button>
         </div>
@@ -595,6 +596,14 @@
                             <div class="metric-row">
                                 <span class="metric-label">Sala d'espera</span>
                                 <span class="metric-value">3</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">⚠️ Crítics</span>
+                                <span class="metric-value" style="color:#ff6b6b;">2 *</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">🔒 Aïllats</span>
+                                <span class="metric-value">2</span>
                             </div>
                             <div class="metric-row">
                                 <span class="metric-label">Temps mig espera</span>
@@ -693,6 +702,16 @@
                         <h3>Sala d'Espera</h3>
                         <div class="value">3</div>
                         <div class="subtext">Esperant ser atesos</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                        <h3>⚠️ Crítics</h3>
+                        <div class="value">2 *</div>
+                        <div class="subtext">Estat crític</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                        <h3>🔒 Aïllats</h3>
+                        <div class="value">2</div>
+                        <div class="subtext">En aïllament</div>
                     </div>
                     <div class="metric-card">
                         <h3>Ingressos Avui</h3>
@@ -876,6 +895,36 @@
             <div id="screen-quirofan" class="screen">
                 <h2 style="color: #1e3c72; margin-bottom: 30px;">⚕️ Activitat Quirúrgica</h2>
 
+                <!-- SECCIÓ 1: ACTIVITAT AVUI (PRIORITAT MÀXIMA) -->
+                <h3 style="color: #1e3c72; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    🗓️ Activitat Quirúrgica AVUI
+                    <span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.7em;">EN DIRECTE</span>
+                </h3>
+                <div class="metrics-grid">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <h3>IQ en Curs</h3>
+                        <div class="value">3 *</div>
+                        <div class="subtext">Intervencions actives ara</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <h3>IQ Completades Avui</h3>
+                        <div class="value">5 *</div>
+                        <div class="subtext">Finalitzades</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                        <h3>IQ Pendents Avui</h3>
+                        <div class="value">4 *</div>
+                        <div class="subtext">Programades per realitzar</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h3>Quiròfans Actius</h3>
+                        <div class="value">3/4 *</div>
+                        <div class="subtext">En activitat ara</div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓ 2: ACTIVITAT GENERAL -->
+                <h3 style="color: #1e3c72; margin: 40px 0 20px 0;">📊 Activitat Quirúrgica General - 2025</h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <h3>Total Intervencions</h3>
@@ -897,6 +946,109 @@
                         <div class="value">276</div>
                         <div class="subtext">6% del total</div>
                     </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                        <h3>Temps Espera Mitjà</h3>
+                        <div class="value">129 dies</div>
+                        <div class="subtext">Llista d'espera</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                        <h3>Ratio Activitat</h3>
+                        <div class="value">85% *</div>
+                        <div class="subtext">Quiròfans actius</div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓ 3: LLISTA ESPERA DETALLADA -->
+                <h3 style="color: #1e3c72; margin: 40px 0 20px 0;">📋 Llista Espera Quirúrgica - Detall per Prioritat</h3>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 1.2em; margin-bottom: 5px;">Total Pacients en Llista</h3>
+                            <div style="font-size: 3em; font-weight: bold;">1.752</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.5em; font-weight: bold;">33</div>
+                            <div style="font-size: 0.9em;">En baixa temporal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Llista Espera Quirúrgica</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Intervencions<br>Totals en Llista</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Baixa<br>Temporal</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Fora Garantia<br>Actius</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px; color: #dc3545; font-weight: 600;">0-Sense garantia</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">8</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6; background: #f8f9fa;">
+                                <td style="padding: 12px; color: #dc3545; font-weight: 600;">1-Neoplàsies garantia 45 dies</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">7</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px; color: #fd7e14; font-weight: 600;">2-Neoplàsies garantia 60 dies</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">9</td>
+                                <td style="padding: 12px; text-align: center;">2</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6; background: #f8f9fa;">
+                                <td style="padding: 12px; color: #ffc107; font-weight: 600;">4-Garantia prioritat preferent (90 dies)</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">6</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                                <td style="padding: 12px; text-align: center; background: #fff3cd; font-weight: bold;">1</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px; color: #28a745; font-weight: 600;">5-Garantia prioritat mitjana (180 dies)</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">167</td>
+                                <td style="padding: 12px; text-align: center;">9</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6; background: #f8f9fa;">
+                                <td style="padding: 12px; color: #17a2b8; font-weight: 600;">7-Seguiment prioritat preferent (90 dies)</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">117</td>
+                                <td style="padding: 12px; text-align: center;">0</td>
+                                <td style="padding: 12px; text-align: center; background: #fff3cd; font-weight: bold;">2</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px; color: #6c757d; font-weight: 600;">8-Seguiment prioritat mitjana (180 dies)</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">179</td>
+                                <td style="padding: 12px; text-align: center;">3</td>
+                                <td style="padding: 12px; text-align: center; background: #fff3cd; font-weight: bold;">2</td>
+                            </tr>
+                            <tr style="border-bottom: 2px solid #667eea; background: #f8f9fa;">
+                                <td style="padding: 12px; color: #6c757d; font-weight: 600;">9-Seguiment prioritat bàsica (365 dies)</td>
+                                <td style="padding: 12px; text-align: center; font-size: 1.2em; font-weight: bold;">1.259</td>
+                                <td style="padding: 12px; text-align: center;">19</td>
+                                <td style="padding: 12px; text-align: center; background: #fff3cd; font-weight: bold;">22</td>
+                            </tr>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 1.1em;">
+                                <td style="padding: 15px;">TOTAL INTERVENCIONS</td>
+                                <td style="padding: 15px; text-align: center; font-size: 1.5em;">1.752</td>
+                                <td style="padding: 15px; text-align: center; font-size: 1.3em;">33</td>
+                                <td style="padding: 15px; text-align: center; font-size: 1.3em;">27</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: #e9ecef; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                    <p style="color: #495057; font-size: 0.95em; line-height: 1.6;">
+                        <strong>📊 Font de dades:</strong> PDF LLEIQ_202512.pdf<br>
+                        <strong>📝 Total intervencions:</strong> 1.752 pacients actius<br>
+                        <strong>⏰ Temps demora mitjà:</strong> 129 dies
+                    </p>
                 </div>
 
                 <div class="incidencies-box">
@@ -924,18 +1076,111 @@
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <h3>Primeres Visites</h3>
-                        <div class="value">646</div>
+                        <div class="value">3.232</div>
+                        <div class="subtext">Desembre 2025</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <h3>Segones Visites</h3>
+                        <div class="value">6.722</div>
+                        <div class="subtext">Desembre 2025</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);">
+                        <h3>Proves Diagnòstiques</h3>
+                        <div class="value">1.240 *</div>
+                        <div class="subtext">Laboratori + Radiologia</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                        <h3>Temps Real Mitjà</h3>
+                        <div class="value">15 min *</div>
+                        <div class="subtext">Durada consulta</div>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Total Visites</h3>
+                        <div class="value">9.954</div>
                         <div class="subtext">Desembre 2025</div>
                     </div>
                     <div class="metric-card">
-                        <h3>Total Visites</h3>
-                        <div class="value">2.500+</div>
-                        <div class="subtext">Estimació mensual</div>
+                        <h3>Ratio 2ª/1ª</h3>
+                        <div class="value">2.08</div>
+                        <div class="subtext">Segones per primera</div>
                     </div>
                 </div>
 
                 <a href="#" onclick="showScreen('historic'); return false;" class="historic-link">
                     📈 Veure dades mensuals de consultes →
+                </a>
+            </div>
+
+            
+            <!-- PANTALLA FARMÀCIA -->
+            <div id="screen-farmacia" class="screen">
+                <h2 style="color: #1e3c72; margin-bottom: 30px;">💊 Farmàcia - Consum i Costes</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h3>Consum Total</h3>
+                        <div class="value">287.4K€</div>
+                        <div class="subtext">Desembre 2025</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                        <h3>Variació</h3>
+                        <div class="value">+8.5%</div>
+                        <div class="subtext">vs Desembre 2024</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <h3>Cost Mitjà Pacient</h3>
+                        <div class="value">156€</div>
+                        <div class="subtext">Per pacient hospitalitzat</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                        <h3>Acumulat 2025</h3>
+                        <div class="value">3.2M€</div>
+                        <div class="subtext">Total any en curs</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #1e3c72; margin: 30px 0 20px 0;">Top 5 Serveis per Consum</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Medicina Interna</h3>
+                        <div class="value">167.7K€</div>
+                        <div class="subtext">+18.1% vs 2024</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Dermatologia</h3>
+                        <div class="value">69.5K€</div>
+                        <div class="subtext">+58.0% vs 2024</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Neurologia</h3>
+                        <div class="value">48.0K€</div>
+                        <div class="subtext">+172.2% vs 2024</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Geriatria</h3>
+                        <div class="value">7.0K€</div>
+                        <div class="subtext">+1.2% vs 2024</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Pneumologia</h3>
+                        <div class="value">5.9K€</div>
+                        <div class="subtext">+30.6% vs 2024</div>
+                    </div>
+                </div>
+
+                <div style="background: #e9ecef; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                    <p style="color: #495057; font-size: 0.95em; line-height: 1.6;">
+                        <strong>📊 Font de dades:</strong> PDF Servei_far_202512.pdf<br>
+                        <strong>📝 Tipus:</strong> Consum MHDA (Medicació Hospital de Dia) + Resta<br>
+                        <strong>⏰ Període:</strong> Desembre 2025
+                    </p>
+                </div>
+
+                <a href="#" onclick="showScreen('historic'); return false;" class="historic-link">
+                    📈 Veure evolució mensual →
                 </a>
             </div>
 
