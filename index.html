@@ -636,8 +636,8 @@
                                 <span class="metric-value">10</span>
                             </div>
                             <div class="metric-row">
-                                <span class="metric-label">⚠️ Crítica en 5ª</span>
-                                <span class="metric-value" style="font-size: 1.2em;">ALTA</span>
+                                <span class="metric-label">Monitorització</span>
+                                <span class="metric-value" style="font-size: 1.2em;">OK</span>
                             </div>
                         </div>
                     </div>
@@ -673,7 +673,7 @@
                 <div class="incidencies-box">
                     <h4>⚠️ SITUACIÓ OPERATIVA</h4>
                     <div class="incidencia-item">
-                        <strong>PLANTA 5ª:</strong> Alta ocupació (24 pacients). Capacitat limitada per nous ingressos des d'urgències.
+                        <strong>PLANTA 5ª:</strong> 24 pacients. Monitoritzant ocupació.
                     </div>
                     <div class="incidencia-item">
                         <strong>PLANTA 4ª:</strong> Situació estable (17 pacients). Hi ha llits lliures disponibles.
@@ -841,7 +841,7 @@
                             </div>
                         </div>
                         <div class="incidencia-item" style="margin-top: 20px; background: rgba(255,255,255,0.2); color: white;">
-                            ⚠️ <strong>ALTA OCUPACIÓ.</strong> Feina controlada. Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
+                            ✅ <strong>SITUACIÓ CONTROLADA.</strong> Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
                         </div>
                     </div>
                 </div>
@@ -896,10 +896,80 @@
                 <h2 style="color: #1e3c72; margin-bottom: 30px;">⚕️ Activitat Quirúrgica</h2>
 
                 <!-- SECCIÓ 1: ACTIVITAT AVUI (PRIORITAT MÀXIMA) -->
-                <h3 style="color: #1e3c72; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                    🗓️ Activitat Quirúrgica AVUI
-                    <span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.7em;">EN DIRECTE</span>
-                </h3>
+                
+                
+                <!-- 1. PROGRAMA DETALLAT (PRIMERO) -->
+                <h3 style="color: #1e3c72; margin-bottom: 20px;">📋 Quiròfans Actius Ara Mateix</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 1.5em; font-weight: bold;">QUIRÒFAN 1</span>
+                            <span style="background: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">🟡 EN CURS</span>
+                        </div>
+                        <div style="font-size: 1.1em; margin-bottom: 10px;"><strong>10:30</strong> | Pròtesi genoll dret *</div>
+                        <div style="opacity: 0.9; margin-bottom: 5px;">Dr. Martínez (Traumatologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                            <span>⏱️ Temps: 45 min *</span>
+                            <span>⏰ Estimat: 2h *</span>
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 1.5em; font-weight: bold;">QUIRÒFAN 2</span>
+                            <span style="background: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">🟡 EN CURS</span>
+                        </div>
+                        <div style="font-size: 1.1em; margin-bottom: 10px;"><strong>11:00</strong> | Artroscòpia espatlla *</div>
+                        <div style="opacity: 0.9; margin-bottom: 5px;">Dr. Roig (Traumatologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                            <span>⏱️ Temps: 1h 10min *</span>
+                            <span>⏰ Estimat: 1.5h *</span>
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 1.5em; font-weight: bold;">QUIRÒFAN 3</span>
+                            <span style="background: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;">⏰ FINALITZANT</span>
+                        </div>
+                        <div style="font-size: 1.1em; margin-bottom: 10px;"><strong>08:30</strong> | Cataractes *</div>
+                        <div style="opacity: 0.9; margin-bottom: 5px;">Dr. Puig (Oftalmologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                            <span>⏱️ Temps: 2h 45min *</span>
+                            <span>⏰ Estimat: 3h *</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. PROPERES INTERVENCIONS (SEGUNDO) -->
+                <h3 style="color: #1e3c72; margin: 30px 0 20px 0;">⏰ Properes Intervencions Programades</h3>
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="display: grid; gap: 15px;">
+                        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 5px solid #ffc107;">
+                            <div style="flex: 0 0 80px; font-size: 1.3em; font-weight: bold; color: #1e3c72;">14:00</div>
+                            <div style="flex: 0 0 100px; font-weight: 600; color: #667eea;">QUIRÒFAN 1</div>
+                            <div style="flex: 1;">Hèrnia inguinal | Dr. López (Cirurgia General) *</div>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 5px solid #ffc107;">
+                            <div style="flex: 0 0 80px; font-size: 1.3em; font-weight: bold; color: #1e3c72;">15:30</div>
+                            <div style="flex: 0 0 100px; font-weight: 600; color: #667eea;">QUIRÒFAN 2</div>
+                            <div style="flex: 1;">Varices bilaterals | Dra. Vila (Angiologia) *</div>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 5px solid #ffc107;">
+                            <div style="flex: 0 0 80px; font-size: 1.3em; font-weight: bold; color: #1e3c72;">16:00</div>
+                            <div style="flex: 0 0 100px; font-weight: 600; color: #667eea;">QUIRÒFAN 3</div>
+                            <div style="flex: 1;">Pròtesi maluc | Dr. Costa (Traumatologia) *</div>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 5px solid #ffc107;">
+                            <div style="flex: 0 0 80px; font-size: 1.3em; font-weight: bold; color: #1e3c72;">17:30</div>
+                            <div style="flex: 0 0 100px; font-weight: 600; color: #667eea;">QUIRÒFAN 1</div>
+                            <div style="flex: 1;">Amígdales | Dra. Serra (ORL) *</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. RESUM MÉTRICAS (TERCERO) -->
+                <h3 style="color: #1e3c72; margin: 40px 0 20px 0;">📊 Resum Activitat del Dia</h3>
                 <div class="metrics-grid">
                     <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
                         <h3>IQ en Curs</h3>
