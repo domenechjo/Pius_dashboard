@@ -578,7 +578,7 @@
             <!-- PANTALLA 1: ESTAT ACTUAL (NOVA - FOTO DEL MOMENT) -->
             <div id="screen-estat" class="screen active">
                 <h2 style="color: #1e3c72; margin-bottom: 30px; font-size: 2em;">
-                    🎯 Estat Operatiu Actual - <span style="color: #dc3545;">EN DIRECTE</span>
+                    🎯 Estat Operatiu Actual
                 </h2>
 
                 <div class="status-grid">
@@ -1143,6 +1143,42 @@
             <div id="screen-consultes" class="screen">
                 <h2 style="color: #1e3c72; margin-bottom: 30px;">👨‍⚕️ Consultes Externes</h2>
 
+                <!-- VISITES PROGRAMADES AVUI (PRIMERO) -->
+                <h3 style="color: #1e3c72; margin-bottom: 20px;">📅 Visites Programades Avui</h3>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3em; font-weight: bold;">68 *</div>
+                            <div style="font-size: 1.1em; opacity: 0.9;">Total Visites</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3em; font-weight: bold;">32 *</div>
+                            <div style="font-size: 1.1em; opacity: 0.9;">Primeres</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3em; font-weight: bold;">36 *</div>
+                            <div style="font-size: 1.1em; opacity: 0.9;">Segones</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEMPS DEMORA I ESPERA (SEGUNDO) -->
+                <h3 style="color: #1e3c72; margin-bottom: 20px;">⏱️ Temps d'Espera</h3>
+                <div class="metrics-grid" style="margin-bottom: 40px;">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                        <h3>Temps de Demora</h3>
+                        <div class="value">45 dies *</div>
+                        <div class="subtext">Temps mig que porten esperant<br>els pacients en llista</div>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        <h3>Temps d'Espera</h3>
+                        <div class="value">62 dies *</div>
+                        <div class="subtext">Temps mig que han trigat<br>en realitzar la prestació</div>
+                    </div>
+                </div>
+
+                <!-- ACTIVITAT GENERAL CONSULTES (TERCERO) -->
+                <h3 style="color: #1e3c72; margin-bottom: 20px;">📊 Activitat General - Desembre 2025</h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <h3>Primeres Visites</h3>
