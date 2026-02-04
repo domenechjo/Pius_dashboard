@@ -6,6 +6,22 @@
     <title>Hospital Pius Quadre comandament</title>
     
     <style>
+        :root {
+            --primary: #0095DA; /* logo blue */
+            --primary-700: #4A90E2; /* darker blue */
+            --primary-rgb: 0,149,218;
+            --accent: #3b7dd6;
+            --success: #52c41a;
+            --warn: #faad14;
+            --danger: #ff4d4f;
+            --card-bg: rgba(255,255,255,0.95);
+            --muted: #5a6c7d;
+        }
+        @keyframes headerShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #4A90E2 0%, #0095DA 100%);
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
             color: #2c3e50;
             min-height: 100vh;
         }
@@ -26,7 +42,7 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             padding: 15px 30px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -47,37 +63,37 @@
         }
 
         .title-section h1 {
-            color: #0095DA;
+            color: var(--primary);
             font-size: 2em;
             font-weight: 700;
             margin-bottom: 5px;
         }
 
         .title-section .subtitle {
-            color: #4A90E2;
+            color: var(--primary-700);
             font-size: 1.1em;
             font-weight: 500;
         }
 
         .datetime {
             text-align: right;
-            color: #5a6c7d;
+            color: var(--muted);
         }
 
         .datetime .date {
             font-size: 1.3em;
             font-weight: 600;
-            color: #0095DA;
+            color: var(--primary);
         }
 
         .datetime .time {
             font-size: 1.5em;
             font-weight: 700;
-            color: #4A90E2;
+            color: var(--primary-700);
         }
 
         .nav-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -113,7 +129,7 @@
 
         .filter-group select {
             padding: 8px 12px;
-            border: 2px solid #4A90E2;
+            border: 2px solid var(--primary-700);
             border-radius: 8px;
             font-size: 0.95em;
             background: white;
@@ -121,6 +137,23 @@
             color: #0095DA;
             font-weight: 500;
         }
+
+        .panel-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(var(--primary-rgb), 0.06);
+            color: #000;
+            border-radius: 4px;
+            font-size: 0.95em;
+            line-height: 1.45;
+        }
+
+        .panel-note-green { border-left: 3px solid var(--success); }
+        .panel-note-warn  { border-left: 3px solid var(--warn); }
+        .panel-note-blue  { border-left: 3px solid var(--accent); }
+        .panel-note-red   { border-left: 3px solid var(--danger); }
+
+        .panel-inline { display: flex; align-items: center; border-radius: 6px; }
 
         .filter-info {
             margin-left: auto;
@@ -133,7 +166,7 @@
         }
 
         .nav {
-            background: rgba(255, 255, 255, 0.98);
+            background: var(--card-bg);
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -145,7 +178,7 @@
         }
 
         .nav-btn {
-            background: linear-gradient(135deg, #4A90E2 0%, #0095DA 100%);
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.3);
             padding: 12px 24px;
@@ -160,14 +193,17 @@
         .nav-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            background: linear-gradient(135deg, #5A9EF5 0%, #1BA3E5 100%);
+            background: linear-gradient(135deg, var(--btn-hover-start, #5A9EF5) 0%, var(--btn-hover-end, #1BA3E5) 100%);
         }
 
         .nav-btn.active {
-            background: linear-gradient(135deg, #0078D4 0%, #005A9E 100%);
+            background: linear-gradient(135deg, var(--btn-active-start, #0078D4) 0%, var(--btn-active-end, #005A9E) 100%);
             box-shadow: 0 6px 20px rgba(0, 120, 212, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.5);
         }
+
+        /* button variables */
+        :root { --btn-hover-start: #5A9EF5; --btn-hover-end: #1BA3E5; --btn-active-start: #0078D4; --btn-active-end: #005A9E; }
 
         .screen {
             display: none;
@@ -189,9 +225,9 @@
             font-size: 1.4em;
             font-weight: 700;
             margin-bottom: 20px;
-            color: #0095DA;
+            color: var(--primary);
             padding-bottom: 12px;
-            border-bottom: 3px solid #4A90E2;
+            border-bottom: 3px solid var(--primary-700);
         }
 
         .metrics-grid {
@@ -333,27 +369,27 @@
                 <div class="metrics-grid">
                     <div class="metric-box">
                         <div class="metric-label">En Atenció</div>
-                        <div class="metric-value blue">9</div>
+                        <div class="metric-value blue" id="urg-atencio">9</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Sala Espera</div>
-                        <div class="metric-value yellow">3</div>
+                        <div class="metric-value yellow" id="urg-espera">3</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Crítics</div>
-                        <div class="metric-value red">2 *</div>
+                        <div class="metric-value red" id="urg-critics">2 *</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Aïllats</div>
-                        <div class="metric-value yellow">2</div>
+                        <div class="metric-value yellow" id="urg-aillats">2</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Temps Mig Espera</div>
-                        <div class="metric-value">41 min</div>
+                        <div class="metric-value" id="urg-temps">41 min</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Ingressos Avui</div>
-                        <div class="metric-value">6</div>
+                        <div class="metric-value" id="urg-ingressos">6</div>
                     </div>
                 </div>
             </div>
@@ -363,15 +399,15 @@
                 <div class="metrics-grid">
                     <div class="metric-box">
                         <div class="metric-label">Planta 4ª</div>
-                        <div class="metric-value green">17</div>
+                        <div class="metric-value green" id="hosp-p4">17</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Planta 5ª</div>
-                        <div class="metric-value red">24</div>
+                        <div class="metric-value red" id="hosp-p5">24</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">UGA</div>
-                        <div class="metric-value">10</div>
+                        <div class="metric-value" id="hosp-uga">10</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-label">Monitorització</div>
@@ -405,13 +441,13 @@
             <div class="panel">
                 <div class="panel-title">⚠️ SITUACIÓ OPERATIVA</div>
                 <div style="display: grid; gap: 10px;">
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #faad14;">
+                    <div class="panel-note panel-note-warn">
                         <strong>PLANTA 5ª:</strong> 24 pacients. Monitoritzant ocupació.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                    <div class="panel-note panel-note-green">
                         <strong>PLANTA 4ª:</strong> Situació estable (17 pacients). Hi ha llits lliures disponibles.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                    <div class="panel-note panel-note-green">
                         <strong>URGÈNCIES:</strong> Feina controlada. Temps d'espera dins dels límits acceptables.
                     </div>
                 </div>
@@ -506,7 +542,7 @@
             
             <div class="panel">
                 <div class="panel-title">INCIDÈNCIES</div>
-                <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                <div class="panel-note panel-note-green">
                     <strong>Situació:</strong> Feina controlada durant la tarda. Es realitzen 2 ingressos. Consultes externes plenes.
                 </div>
             </div>
@@ -531,7 +567,7 @@
                         <div class="metric-value green">7</div>
                     </div>
                 </div>
-                <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a; color: #d8d9da;">
+                <div class="panel-note panel-note-green">
                     ✅ <strong>Situació estable.</strong> Hi ha llits lliures. Assumeixen pacients de bloc quirúrgic.
                 </div>
             </div>
@@ -552,7 +588,7 @@
                         <div class="metric-value yellow">3</div>
                     </div>
                 </div>
-                <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-left: 3px solid #faad14; color: #d8d9da;">
+                <div class="panel-note panel-note-warn">
                     ⚠️ <strong>Situació controlada.</strong> Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
                 </div>
             </div>
@@ -590,16 +626,16 @@
             <div class="panel">
                 <div class="panel-title">INCIDÈNCIES</div>
                 <div style="display: grid; gap: 10px;">
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                    <div class="panel-note panel-note-green">
                         <strong>4ª Planta:</strong> Èxitus pacient hab 413.1. Tràmits realitzats. Assumeixen pacients de BQ. Hi ha llits lliures.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #faad14;">
+                    <div class="panel-note panel-note-warn">
                         <strong>5ª Planta:</strong> Feina controlada durant la tarda. Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #3b7dd6;">
+                    <div class="panel-note panel-note-blue">
                         <strong>CSS/UGA:</strong> Sense incidències. Assumeixen pacient a UGA.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #3b7dd6;">
+                    <div class="panel-note panel-note-blue">
                         <strong>HADO/HADI:</strong> Diversos ingressos durant el torn.
                     </div>
                 </div>
@@ -661,23 +697,23 @@
             <div class="panel">
                 <div class="panel-title">PROPERES INTERVENCIONS PROGRAMADES</div>
                 <div style="display: grid; gap: 10px;">
-                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #faad14;">
+                    <div class="panel-note panel-note-warn panel-inline">
                         <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">14:00</div>
                         <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 1</div>
                         <div style="flex: 1;">Hèrnia inguinal | Dr. López (Cirurgia General) *</div>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #faad14;">
+                    <div class="panel-note panel-note-warn panel-inline">
                         <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">15:30</div>
                         <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 2</div>
                         <div style="flex: 1;">Varices bilaterals | Dra. Vila (Angiologia) *</div>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #faad14;">
+                    <div class="panel-note panel-note-warn panel-inline">
                         <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">16:00</div>
                         <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 3</div>
                         <div style="flex: 1;">Pròtesi maluc | Dr. Costa (Traumatologia) *</div>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #faad14;">
-                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">17:30</div>
+                    <div class="panel-note panel-note-warn panel-inline">
+                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold">17:30</div>
                         <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 1</div>
                         <div style="flex: 1;">Amígdales | Dra. Serra (ORL) *</div>
                     </div>
@@ -830,13 +866,13 @@
             <div class="panel">
                 <div class="panel-title">INCIDÈNCIES</div>
                 <div style="display: grid; gap: 10px;">
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #ff4d4f;">
+                    <div class="panel-note panel-note-red">
                         <strong>BQ:</strong> IQ programades durant la tarda. Èxitus pacient post IQ urologia. Es gestiona amb HJXXIII autopsia del difunt.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                    <div class="panel-note panel-note-green">
                         <strong>2ª Planta/CMA:</strong> Sense incidències.
                     </div>
-                    <div style="padding: 12px; background: #f8f9fa; border-left: 3px solid #52c41a;">
+                    <div class="panel-note panel-note-green">
                         <strong>Sala Parts:</strong> Sense incidències.
                     </div>
                 </div>
@@ -1098,25 +1134,37 @@
             else if (edat === '46-65') factorEdat = 0.30;
             else if (edat === '66+') factorEdat = 0.24;
             
-            // ACTUALIZAR ESTAT ACTUAL - Urgències
-            const urgMetrics = document.querySelectorAll('#screen-estat .panel:nth-child(1) .metric-value');
-            if (urgMetrics.length >= 5) {
-                urgMetrics[0].textContent = Math.round(datos.en_atencio * factorEdat) || datos.en_atencio;
-                urgMetrics[1].textContent = Math.round(datos.sala_espera * factorEdat) || datos.sala_espera;
-                urgMetrics[2].textContent = Math.round(datos.en_atencio * 0.22) + ' *';
-                urgMetrics[3].textContent = Math.round(datos.sala_espera * 0.67) || 2;
-                urgMetrics[4].textContent = (Math.round(datos.temps_mig * factorEdat) || datos.temps_mig) + ' min';
-            }
+            // ACTUALIZAR URGÈNCIES con getElementById
+            const urgAtencio = document.getElementById('urg-atencio');
+            const urgEspera = document.getElementById('urg-espera');
+            const urgCritics = document.getElementById('urg-critics');
+            const urgAillats = document.getElementById('urg-aillats');
+            const urgTemps = document.getElementById('urg-temps');
+            const urgIngressos = document.getElementById('urg-ingressos');
             
-            // ACTUALIZAR ESTAT ACTUAL - Hospitalització
-            const hospMetrics = document.querySelectorAll('#screen-estat .panel:nth-child(2) .metric-value');
-            if (hospMetrics.length >= 3) {
-                hospMetrics[0].textContent = Math.round(datosHosp.planta4 * factorEdat) || datosHosp.planta4;
-                hospMetrics[1].textContent = Math.round(datosHosp.planta5 * factorEdat) || datosHosp.planta5;
-                hospMetrics[2].textContent = Math.round(datosHosp.uga * factorEdat) || datosHosp.uga;
-            }
+            if (urgAtencio) urgAtencio.textContent = Math.round(datos.en_atencio * factorEdat);
+            if (urgEspera) urgEspera.textContent = Math.round(datos.sala_espera * factorEdat);
+            if (urgCritics) urgCritics.textContent = Math.round(datos.en_atencio * factorEdat * 0.22) + ' *';
+            if (urgAillats) urgAillats.textContent = Math.round(datos.sala_espera * factorEdat * 0.67);
+            if (urgTemps) urgTemps.textContent = Math.round(datos.temps_mig * factorEdat) + ' min';
+            if (urgIngressos) urgIngressos.textContent = Math.round(datos.ingressos * factorEdat);
+            
+            // ACTUALIZAR HOSPITALITZACIÓ con getElementById
+            const hospP4 = document.getElementById('hosp-p4');
+            const hospP5 = document.getElementById('hosp-p5');
+            const hospUga = document.getElementById('hosp-uga');
+            
+            if (hospP4) hospP4.textContent = Math.round(datosHosp.planta4 * factorEdat);
+            if (hospP5) hospP5.textContent = Math.round(datosHosp.planta5 * factorEdat);
+            if (hospUga) hospUga.textContent = Math.round(datosHosp.uga * factorEdat);
 
-            console.log('✅ Filtres aplicats:', { genere, edat, factorEdat });
+            console.log('✅ FILTRES APLICATS:', { 
+                genere, 
+                edat, 
+                factorEdat,
+                'En Atenció': urgAtencio ? Math.round(datos.en_atencio * factorEdat) : 'NO ENCONTRADO',
+                'Sala Espera': urgEspera ? Math.round(datos.sala_espera * factorEdat) : 'NO ENCONTRADO'
+            });
         }
 
         function showScreen(screenName) {
