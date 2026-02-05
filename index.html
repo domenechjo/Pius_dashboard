@@ -11,14 +11,31 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --pius-blue: #0095DA;
+            --pius-blue-dark: #1E63B6;
+            --pius-blue-light: #58B5E6;
+            --ink: #0f2233;
+            --muted: #5a6c7d;
+            --surface: #ffffff;
+            --surface-soft: rgba(255, 255, 255, 0.86);
+            --line: rgba(15, 34, 51, 0.08);
+            --shadow-lg: 0 18px 40px rgba(12, 44, 78, 0.18);
+            --shadow-md: 0 10px 26px rgba(12, 44, 78, 0.12);
+            --shadow-sm: 0 6px 16px rgba(12, 44, 78, 0.1);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #0095DA 0%, #4A90E2 100%);
+            font-family: "IBM Plex Sans", "Source Sans 3", "Segoe UI", sans-serif;
+            background: radial-gradient(1200px 600px at 10% -10%, rgba(255, 255, 255, 0.35), transparent 55%),
+                        radial-gradient(900px 480px at 110% 10%, rgba(255, 255, 255, 0.22), transparent 60%),
+                        linear-gradient(135deg, var(--pius-blue) 0%, var(--pius-blue-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
+            color: var(--ink);
         }
 
         .container {
@@ -29,10 +46,12 @@
         .header {
             text-align: center;
             margin-bottom: 50px;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            background: var(--surface);
+            padding: 42px 40px 36px;
+            border-radius: 18px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            animation: rise 0.7s ease-out both;
         }
 
         .logo {
@@ -41,17 +60,24 @@
         }
 
         h1 {
-            color: #0095DA;
+            color: var(--pius-blue);
             font-size: 2.5em;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
 
         .subtitle {
-            color: #5a6c7d;
-            font-size: 1.1em;
-            font-weight: 400;
+            color: var(--ink);
+            font-size: 1.45em;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .intro {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.95em;
         }
 
         .buttons-container {
@@ -61,36 +87,93 @@
         }
 
         .mode-button {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
             padding: 50px 30px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-sm);
             text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            min-height: 240px;
+            position: relative;
+            overflow: hidden;
+            animation: rise 0.8s ease-out both;
+        }
+
+        .mode-button::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120px 120px at 20% 0%, rgba(0, 149, 218, 0.18), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .mode-button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 18px;
+            right: 18px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(0, 149, 218, 0.3), rgba(30, 99, 182, 0.55), rgba(0, 149, 218, 0.3));
+            transform: scaleX(0.2);
+            opacity: 0;
+            transition: transform 0.35s ease, opacity 0.35s ease;
         }
 
         .mode-button:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,149,218,0.25);
-            border-color: #0095DA;
+            box-shadow: var(--shadow-md);
+            border-color: rgba(0, 149, 218, 0.35);
+        }
+
+        .mode-button:hover::before {
+            opacity: 1;
+        }
+
+        .mode-button:hover::after {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+
+        .mode-button:focus-visible {
+            outline: 3px solid rgba(0, 149, 218, 0.35);
+            outline-offset: 3px;
+        }
+
+        .mode-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(0, 149, 218, 0.12), rgba(30, 99, 182, 0.16));
+            box-shadow: inset 0 0 0 1px rgba(0, 149, 218, 0.2);
+        }
+
+        .mode-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--pius-blue-dark);
         }
 
         .mode-title {
             font-size: 1.6em;
             font-weight: 700;
-            color: #0095DA;
+            color: var(--pius-blue);
             margin-bottom: 5px;
         }
 
         .mode-description {
             font-size: 0.95em;
-            color: #5a6c7d;
+            color: var(--muted);
             text-align: center;
             line-height: 1.4;
         }
@@ -101,6 +184,29 @@
             color: white;
             font-size: 0.9em;
             opacity: 0.9;
+        }
+
+        .mode-button:nth-child(1) {
+            animation-delay: 0.08s;
+        }
+
+        .mode-button:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+
+        .mode-button:nth-child(3) {
+            animation-delay: 0.24s;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -114,6 +220,7 @@
             
             .mode-button {
                 padding: 40px 25px;
+                min-height: 210px;
             }
         }
     </style>
@@ -123,28 +230,49 @@
         <div class="header">
             <img src="data:image/gif;base64,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" alt="Hospital Pius de Valls" class="logo">
             <h1>Hospital Pius de Valls</h1>
-            <p class="subtitle">Quadre de Comandament Operatiu</p>
+            <p class="subtitle">Quadre de Comandament</p>
+            <p class="intro">Selecciona un mòdul per consultar indicadors i tendències.</p>
         </div>
 
         <div class="buttons-container">
             <a href="historic.html" class="mode-button">
+                <span class="mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 8h16M7 4h10M6 20h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2Z"/>
+                        <path d="M8 12h4M8 16h8"/>
+                    </svg>
+                </span>
                 <div class="mode-title">Històric</div>
                 <div class="mode-description">Consulta dades de mesos anteriors</div>
             </a>
 
             <a href="actual.html" class="mode-button">
+                <span class="mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19h16"/>
+                        <path d="M6 15l4-4 3 3 5-6"/>
+                        <circle cx="18" cy="7" r="2.2"/>
+                    </svg>
+                </span>
                 <div class="mode-title">Actual</div>
                 <div class="mode-description">Visualitza dades del mes actual</div>
             </a>
 
             <a href="predictiu.html" class="mode-button">
+                <span class="mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 18h16"/>
+                        <path d="M7 16l3-4 3 2 4-6"/>
+                        <path d="M16 6h4v4"/>
+                    </svg>
+                </span>
                 <div class="mode-title">Predictiu</div>
                 <div class="mode-description">Projeccions i tendències futures</div>
             </a>
         </div>
 
         <div class="footer">
-            Hospital Pius de Valls | Desembre 2025
+            Hospital Pius de Valls
         </div>
     </div>
 </body>
