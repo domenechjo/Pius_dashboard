@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Pius de Valls - Quadre de Comandament</title>
+    
+    <style>
+        :root {
+            --primary: #0095DA; /* logo blue */
+            --primary-700: #4A90E2; /* darker blue */
+            --primary-rgb: 0,149,218;
+            --accent: #3b7dd6;
+            --success: #52c41a;
+            --warn: #faad14;
+            --danger: #ff4d4f;
+            --card-bg: rgba(255,255,255,0.95);
+            --muted: #5a6c7d;
+        }
+        @keyframes headerShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "IBM Plex Sans", "Source Sans 3", "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .title-section h1 {
+            color: var(--primary);
+            font-size: 2.1em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .title-section .subtitle {
+            color: #0f2233;
+            font-size: 1.35em;
+            font-weight: 700;
+        }
+
+        .title-section .title-meta {
+            color: var(--muted);
+            font-size: 0.95em;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .datetime {
+            text-align: right;
+            color: var(--muted);
+        }
+
+        .datetime .date {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .datetime .time {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary-700);
+        }
+
+        .nav-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid var(--primary-700);
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+            color: #0095DA;
+            font-weight: 500;
+        }
+
+        .panel-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(var(--primary-rgb), 0.06);
+            color: #000;
+            border-radius: 4px;
+            font-size: 0.95em;
+            line-height: 1.45;
+        }
+
+        .panel-note-green { border-left: 3px solid var(--success); }
+        .panel-note-warn  { border-left: 3px solid var(--warn); }
+        .panel-note-blue  { border-left: 3px solid var(--accent); }
+        .panel-note-red   { border-left: 3px solid var(--danger); }
+
+        .panel-inline { display: flex; align-items: center; border-radius: 6px; }
+
+        .filter-info {
+            margin-left: auto;
+            padding: 8px 16px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #0095DA;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, var(--btn-hover-start, #5A9EF5) 0%, var(--btn-hover-end, #1BA3E5) 100%);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--btn-active-start, #0078D4) 0%, var(--btn-active-end, #005A9E) 100%);
+            box-shadow: 0 6px 20px rgba(0, 120, 212, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* button variables */
+        :root { --btn-hover-start: #5A9EF5; --btn-hover-end: #1BA3E5; --btn-active-start: #0078D4; --btn-active-end: #005A9E; }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-700);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #4A90E2;
+            transition: all 0.3s ease;
+        }
+
+        .metric-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .metric-label {
+            font-size: 0.95em;
+            color: #5a6c7d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #0095DA;
+        }
+
+        .metric-value.blue { color: #4A90E2; }
+        .metric-value.green { color: #28a745; }
+        .metric-value.yellow { color: #ffc107; }
+        .metric-value.red { color: #dc3545; }
+
+        .metric-subtext {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: linear-gradient(135deg, #4A90E2 0%, #0095DA 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge.green { background: #d4edda; color: #155724; }
+        .badge.yellow { background: #fff3cd; color: #856404; }
+        .badge.red { background: #f8d7da; color: #721c24; }
+        .badge.blue { background: #d1ecf1; color: #0c5460; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <img src="data:image/gif;base64,R0lGODlhvwBAAOYAACIeH6vU7gB8y3C24mZmZj05OieQ0/n8/oK/5p6cndXV1cjHx9Po9pCOj1lWVgyCzUmh2szl9YKAgayqqy8rLKLP7EtHSOPj4/Hx8VKm3Lq4uRqJ0HRyckCd2L/e8vD3/Hq75JbJ6jqa1+fz+qfS7Y3E6BOGzyCM0rTY8AR+zE6k22Ct3+Dv+TCV1Uyj2tHn9oC+5YrD58Th86PQ7P///w+Ezrfa8O32+wqBzff7/ZLH6bDW71mq3SKO0pvM69Dn9SuS1GSv33W449nr9zKW1ev1+xqL0eHw+VCl26XR7brc8ZPH6QZ/zEOe2RWHzzyb18/m9cfi9O/3/IXB50yl2xGFzvH5/WCv33K34lCl3cHf8+Hv+aPR7Uij24vD5x2L0SSO0gyDz/v9/o/F6CyT1AeAzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAC/AEAAAAf/gDSCg4SFhoeHUWMIQTGOjzEziJOUlZaXmJmam5ydm18CoaKjTCCep6ipqqusmyejsKEurbS1tre4NK+xoxC5v8DBwoO7vKG+w8nKy53FxsjM0dLTgs680EclOtsDPt7f4OEVUNTl5pXWsdAixu2jNVPn8vO67gLQT/b2Dwf0/tPpYOHT567Gj38Ilxmx12RQPoLGDCacKIyMPR4OIUY8SLEjrghgNogcOdLAjYwaY0n0yFLaw5TvOLacmewlzFAraeoEZvNmzp3lAswYSpSokBkkkipdyrSp06RKihjqCfMnUGkswtzcSsrJGDGEqKa0epXZCydc04rCElYt2bLK/86qVWuCnCCxGt/CHSZ3btoBKLnq3Rusr9+tSAJvHUz4l+HDMFUo9imzcbLHsTpU8DAAMizJd91WtiwM86gVhCp4FgWaBl6IjEnbMh2qg6EOqwW0fk0wtmxatAWMprEj927Rv/mijdXiEAvjg9ilrcEgeenlsGAggi5ohdoHH6wXxj5qx3bPPRILKgKEyVYnOsSP5+XhkAfIHTygyEDog4ynAJKwwxHyzRdLfYaoNlcN5lXQQ2sFUkSbeYZ4pxYSH/ywC4QRJkSbdobUoBZgMIwC4QUNpKjiBBcQouICNKCYYouCLKAiIRM4QAEABRAwAQaITJAijDWmOEEhFyRAgP8DEvxoyAUSWAAAAA5wQCQNQqo4JCE2poillmA2QOSKhWR5JCG0qZeaWhV8gMRnXE4pp5wSDCJnAzQsIOeVDcgpCAZSzjklBVcS4sCUeArSJ5UuCgoABWcKMsGOjjogyKGOFqCAon5i6uiUMGogJwWFYGopmuSJcsJtabXZQiwQ6vkpAHXScGeeew6yKACCEDBnAaMCaQimidKw6KnGzgqABoJcQOmjwE5Zq6eCUtDirjRQ6yiQHMxZqKmFBMcCIfdx5Sovse65gAbPAnmrrADw6ecFclog7AQFMHsIsbpOeaoCcjrQ4gKUUgBkArfG2IC9l05p5QLdOpzslDQosMD/xXImcDGRz9JqqL/hpipKBYTgthUMH7yKbpwUS5rru7lySjG8xVbCr8ynRmzwIPAmQEPEvCJyMw2BWootITELAvCvHzOKqjGoCVLcOx10IKI7K6TcTrot4wqqrYh6HW+/M4/qpM1h4ywIpQQUEjANEshJwKbDpp0tyEfb+fUgcdMqJ913Oz1IcKvS8MHVoWAoiNbGNGehMVwHPfHYMO89+dqCWpCAsPtOWYADoEdrKb12N/woltX62HSiGFBqtJ9IW05DtAsEWmvgyAoSnHA0vCnKGB9418EHh/NSAwtj2BN5in3zKEjlY8sc9ASfUgB4qcpaSjP2LQcqqAPCmpqi/6dH5v285Uvz2rcFg4D7tDEeTB0KDD+oLACJ9P2gT+SO6gu9vF3TQLTmZK3OzUp7CWsf7DDAgY5NqW2BcxT7Lhe76MHtgTQQ1ZRo5L7BiWx+NCiXADBkjQ88JzsfCAicePYpC1zpf2STnNIS4D0A1EyBNiQbAksXwUJoQAIDBECLtPUoCQjLfGCzoOhSlDHT5Y4GtMnaDj6Akw+YbBQks58AmuM75bEsXhejkd5yCC8AypAQCANZ3XKotiTeDnOCIwQGPAUjTD2sUBQcI5HSJ0Enhow5bkJNKHaQvFgkpjOi+IH8vMjCrhkChtKbhNwMWKxj9cpzhCCdxw6xqzryMP+Gbttb8z4FpA7qLlUtCJ4AbLPK4qmEOKJAmQph9UVJhg0DcgPSBaLFvjmejQZpBIDP1lhJNVJvSpHy1QYzyAHAAUpOpfxkJCtIpGjdUYMAOJIpoUie41nINvkpkTEOEooTfECcBImcLdnoKQpQC0+7Ap33dkZMHeIQABZYGJ0EEa3P6UhOHDDdDUFJzYr9jRCBahsRp2SYE/xgDDXowABIdpAxwKAD6RgDDXAzRcTtr5aISJgCHDglhtWQgNdbnT3/dFKHAYmP3wufNPN4vrH1jVSEaN4cP1WAvqSSBizwAAxgQDIajGEFRGUB8q6onYvS4HHpJIQCQPdEQ4EuUhj/AGK9hikpAjyrAEachASuOogcMUmONAxYpGIUpTk5YK1jfWuQqFoq0G0qrjecql3jSlXQNUAuGGLBCjwqCI+eAAZKHUBEieMBV0KEQx36x1nwFwtY8mIFLPiAecKDzsdGVkJEsCIvbINIYwwgPIIYwFA1AtmyrnUVDTgSivD4WUO8gAhdhIVttAiLE+xgXIJ4aGcZycmqGgJgbxTVa5+HJ1wOtLbv4wXKCgIDJCCofilpraKMa4gCFCCnAOAcIQqQKDZC9xC724w+apDag0CVuIO4wAJQhCwMXEy8nAJcj2o03/aVl3UamEBKP7u7FlyxHYDZqABINtytlale/ypY/0rpVSuACelZZ3LAfytGAQoA67kR2h1ELOoBla3AA++FXJw4gIELWOBUBbAXBrxrCAt8F24Gk0ADMACoU2mYuTQgQAFeit/Iijg3tBxEt46IwGH2yRAI21QBAsoz0F1qw16lbW2H4FEkw9cBNzbWDuf0JFoBjFlTfVu2NkywR3FAjLXNwQa8DJEYGGqCYsaVxjZ2CAtYQAKkap0FhujjDdMAAxPoFncjxAM666MMJ+FbeAUB6BhtchIIs0BA9TRMK68ZyOA9ryBGUAVHt6MUSMJnAiJ2STGN9RCkYxa9CLAAhA05WwwDQEA5ICZ2LTpCN4AADkw9ChyYQBKG0ICU/jB8KgbuyAL6MgQHkJWAHZEXAHfNZpCx3QDRDRi6UtAPCsZN7nKb+9zoTrddRI2QQAAAOw==" alt="Hospital Pius de Valls" class="logo">
+            <div class="title-section">
+                <h1>Hospital Pius de Valls</h1>
+                <div class="subtitle">Quadre de Comandament</div>
+                <div class="title-meta">Desembre 2025</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters">
+            <div class="filter-group">
+                <label>Gènere</label>
+                <select id="filterGenere" onchange="updateFilters()">
+                    <option value="tots">Tots</option>
+                    <option value="dones">Dones (52%)</option>
+                    <option value="homes">Homes (48%)</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Edat</label>
+                <select id="filterEdat" onchange="updateFilters()">
+                    <option value="tots">Totes les edats</option>
+                    <option value="0-18">0-18 anys (20%)</option>
+                    <option value="19-45">19-45 anys (26%)</option>
+                    <option value="46-65">46-65 anys (30%)</option>
+                    <option value="66+">66+ anys (24%)</option>
+                </select>
+            </div>
+
+            <div class="filter-info">
+                📅 <span id="activeFilters">Desembre 2025 | Tots els filtres actius</span>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="nav-btn active" onclick="showScreen('estat')">ESTAT ACTUAL</button>
+            <button class="nav-btn" onclick="showScreen('urgencies')">URGÈNCIES</button>
+            <button class="nav-btn" onclick="showScreen('hosp')">HOSPITALITZACIÓ</button>
+            <button class="nav-btn" onclick="showScreen('quirofan')">QUIRÒFAN</button>
+            <button class="nav-btn" onclick="showScreen('consultes')">CONSULTES</button>
+            <button class="nav-btn" onclick="showScreen('farmacia')">FARMÀCIA</button>
+            <button class="nav-btn" onclick="showScreen('pades')">PADES</button>
+            <button class="nav-btn" onclick="showScreen('historic')">HISTÒRIC</button>
+            <button class="nav-btn" onclick="showScreen('laboratori')">LABORATORI</button>
+            <button class="nav-btn" onclick="showScreen('rehabilitacio')">REHABILITACIÓ</button>
+            <button class="nav-btn" onclick="showScreen('diagnostic')">DIAGNÒSTIC IMATGE</button>
+        <button class="nav-btn" onclick="showScreen('dialisi')">DIÀLISI</button>
+        <button class="nav-btn" onclick="showScreen('tic')">TIC</button>
+        </div>
+        
+        <!-- ESTAT ACTUAL -->
+        <div id="screen-estat" class="screen active">
+            <div class="panel">
+                <div class="panel-title">URGÈNCIES</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">En Atenció</div>
+                        <div class="metric-value blue" id="urg-atencio">9</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Sala Espera</div>
+                        <div class="metric-value yellow" id="urg-espera">3</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Crítics</div>
+                        <div class="metric-value red" id="urg-critics">2 *</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Aïllats</div>
+                        <div class="metric-value yellow" id="urg-aillats">2</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temps Mig Espera</div>
+                        <div class="metric-value" id="urg-temps">41 min</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ingressos Avui</div>
+                        <div class="metric-value" id="urg-ingressos">6</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">HOSPITALITZACIÓ</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Planta 4ª</div>
+                        <div class="metric-value green" id="hosp-p4">17</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Planta 5ª</div>
+                        <div class="metric-value red" id="hosp-p5">24</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">UGA</div>
+                        <div class="metric-value" id="hosp-uga">10</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Monitorització</div>
+                        <div class="metric-value green">OK</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">ALTRES SERVEIS</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Sociosanitari</div>
+                        <div class="metric-value">30</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">HADO</div>
+                        <div class="metric-value">4</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">HADI</div>
+                        <div class="metric-value">3</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">PADES</div>
+                        <div class="metric-value">28</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">⚠️ SITUACIÓ OPERATIVA</div>
+                <div style="display: grid; gap: 10px;">
+                    <div class="panel-note panel-note-warn">
+                        <strong>PLANTA 5ª:</strong> 24 pacients. Monitoritzant ocupació.
+                    </div>
+                    <div class="panel-note panel-note-green">
+                        <strong>PLANTA 4ª:</strong> Situació estable (17 pacients). Hi ha llits lliures disponibles.
+                    </div>
+                    <div class="panel-note panel-note-green">
+                        <strong>URGÈNCIES:</strong> Feina controlada. Temps d'espera dins dels límits acceptables.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- URGÈNCIES -->
+        <div id="screen-urgencies" class="screen">
+            <div class="panel">
+                <div class="panel-title">ESTAT ACTUAL URGÈNCIES</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">En Atenció</div>
+                        <div class="metric-value blue">9</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Sala Espera</div>
+                        <div class="metric-value yellow">3</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Crítics</div>
+                        <div class="metric-value red">2 </div>
+                        <div class="metric-subtext">En estat crític</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Aïllats</div>
+                        <div class="metric-value yellow">2</div>
+                        <div class="metric-subtext">En aïllament</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ingressos Avui</div>
+                        <div class="metric-value">6</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Altes Avui</div>
+                        <div class="metric-value green">28</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">TRIATGE - TEMPS ESPERA</div>
+                <table>
+                    <tr>
+                        <th>Nivell</th>
+                        <th>Pacients</th>
+                        <th>Temps Espera</th>
+                    </tr>
+                    <tr>
+                        <td>Nivell 1 (Crítica vital)</td>
+                        <td><span style="color: #ff4d4f;">0</span></td>
+                        <td>0 min</td>
+                    </tr>
+                    <tr>
+                        <td>Nivell 2 (Emergència)</td>
+                        <td><span style="color: #faad14;">0</span></td>
+                        <td>68 min</td>
+                    </tr>
+                    <tr>
+                        <td>Nivell 3 (Urgent)</td>
+                        <td><span style="color: #52c41a;">3</span></td>
+                        <td>37 min</td>
+                    </tr>
+                    <tr>
+                        <td>Nivell 4 (Menys urgent)</td>
+                        <td><span style="color: #3b7dd6;">3</span></td>
+                        <td>36 min</td>
+                    </tr>
+                    <tr>
+                        <td>Nivell 5 (No urgent)</td>
+                        <td><span style="color: #d8d9da;">3</span></td>
+                        <td>54 min</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">ACTIVITAT DEL TORN (15h-22h)</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Urgències Admeses</div>
+                        <div class="metric-value green">26</div>
+                        <div class="metric-subtext">Durant el torn</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temps Mig Total</div>
+                        <div class="metric-value">41 min</div>
+                        <div class="metric-subtext">Temps mig d'espera</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">INCIDÈNCIES</div>
+                <div class="panel-note panel-note-green">
+                    <strong>Situació:</strong> Feina controlada durant la tarda. Es realitzen 2 ingressos. Consultes externes plenes.
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- HOSPITALITZACIÓ -->
+        <div id="screen-hosp" class="screen">
+            <div class="panel">
+                <div class="panel-title">PLANTA 4ª</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Pacients</div>
+                        <div class="metric-value green">17/24</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ocupació</div>
+                        <div class="metric-value green">71%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Llits Lliures</div>
+                        <div class="metric-value green">7</div>
+                    </div>
+                </div>
+                <div class="panel-note panel-note-green">
+                    ✅ <strong>Situació estable.</strong> Hi ha llits lliures. Assumeixen pacients de bloc quirúrgic.
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">PLANTA 5ª</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Pacients</div>
+                        <div class="metric-value yellow">24/27</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ocupació</div>
+                        <div class="metric-value yellow">89%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Llits Lliures</div>
+                        <div class="metric-value yellow">3</div>
+                    </div>
+                </div>
+                <div class="panel-note panel-note-warn">
+                    ⚠️ <strong>Situació controlada.</strong> Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">ALTRES UNITATS</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">UGA</div>
+                        <div class="metric-value">10</div>
+                        <div class="metric-subtext">Unitat Geriàtrica</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Sociosanitari</div>
+                        <div class="metric-value">30</div>
+                        <div class="metric-subtext">Convalescència</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">RAC-LLEE</div>
+                        <div class="metric-value">45</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">HADO</div>
+                        <div class="metric-value">4</div>
+                        <div class="metric-subtext">Hospital Dia Onco</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">HADI</div>
+                        <div class="metric-value">3</div>
+                        <div class="metric-subtext">Hospital de Dia</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">INCIDÈNCIES</div>
+                <div style="display: grid; gap: 10px;">
+                    <div class="panel-note panel-note-green">
+                        <strong>4ª Planta:</strong> Èxitus pacient hab 413.1. Tràmits realitzats. Assumeixen pacients de BQ. Hi ha llits lliures.
+                    </div>
+                    <div class="panel-note panel-note-warn">
+                        <strong>5ª Planta:</strong> Feina controlada durant la tarda. Assumeixen ingressos de BQ i URG. Hi ha 2 pacients aïllats.
+                    </div>
+                    <div class="panel-note panel-note-blue">
+                        <strong>CSS/UGA:</strong> Sense incidències. Assumeixen pacient a UGA.
+                    </div>
+                    <div class="panel-note panel-note-blue">
+                        <strong>HADO/HADI:</strong> Diversos ingressos durant el torn.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- QUIRÒFAN -->
+        <div id="screen-quirofan" class="screen">
+            
+            <!-- QUIRÒFANS ACTIUS -->
+            <div class="panel">
+                <div class="panel-title">QUIRÒFANS ACTIUS ARA MATEIX</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #52c41a;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 1.2em; font-weight: bold; color: #52c41a;">QUIRÒFAN 1</span>
+                            <span style="background: rgba(82, 196, 26, 0.2); padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">EN CURS</span>
+                        </div>
+                        <div style="margin-bottom: 8px;"><strong>10:30</strong> | Pròtesi genoll dret *</div>
+                        <div style="opacity: 0.8; font-size: 0.9em;">Dr. Martínez (Traumatologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2b2f;">
+                            <span style="font-size: 0.9em;">⏱️ 45 min *</span>
+                            <span style="font-size: 0.9em;">⏰ Est: 2h *</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3b7dd6;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 1.2em; font-weight: bold; color: #3b7dd6;">QUIRÒFAN 2</span>
+                            <span style="background: rgba(59, 125, 214, 0.2); padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">EN CURS</span>
+                        </div>
+                        <div style="margin-bottom: 8px;"><strong>11:00</strong> | Artroscòpia espatlla *</div>
+                        <div style="opacity: 0.8; font-size: 0.9em;">Dr. Roig (Traumatologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2b2f;">
+                            <span style="font-size: 0.9em;">⏱️ 1h 10min *</span>
+                            <span style="font-size: 0.9em;">⏰ Est: 1.5h *</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #faad14;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 1.2em; font-weight: bold; color: #faad14;">QUIRÒFAN 3</span>
+                            <span style="background: rgba(250, 173, 20, 0.2); padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">FINALITZANT</span>
+                        </div>
+                        <div style="margin-bottom: 8px;"><strong>08:30</strong> | Cataractes *</div>
+                        <div style="opacity: 0.8; font-size: 0.9em;">Dr. Puig (Oftalmologia) *</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2b2f;">
+                            <span style="font-size: 0.9em;">⏱️ 2h 45min *</span>
+                            <span style="font-size: 0.9em;">⏰ Est: 3h *</span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- PROPERES INTERVENCIONS -->
+            <div class="panel">
+                <div class="panel-title">PROPERES INTERVENCIONS PROGRAMADES</div>
+                <div style="display: grid; gap: 10px;">
+                    <div class="panel-note panel-note-warn panel-inline">
+                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">14:00</div>
+                        <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 1</div>
+                        <div style="flex: 1;">Hèrnia inguinal | Dr. López (Cirurgia General) *</div>
+                    </div>
+                    <div class="panel-note panel-note-warn panel-inline">
+                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">15:30</div>
+                        <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 2</div>
+                        <div style="flex: 1;">Varices bilaterals | Dra. Vila (Angiologia) *</div>
+                    </div>
+                    <div class="panel-note panel-note-warn panel-inline">
+                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold;">16:00</div>
+                        <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 3</div>
+                        <div style="flex: 1;">Pròtesi maluc | Dr. Costa (Traumatologia) *</div>
+                    </div>
+                    <div class="panel-note panel-note-warn panel-inline">
+                        <div style="flex: 0 0 70px; font-size: 1.1em; font-weight: bold">17:30</div>
+                        <div style="flex: 0 0 90px; font-weight: 600; color: #3b7dd6;">QUIRÒFAN 1</div>
+                        <div style="flex: 1;">Amígdales | Dra. Serra (ORL) *</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RESUM ACTIVITAT -->
+            <div class="panel">
+                <div class="panel-title">RESUM ACTIVITAT DEL DIA</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">IQ en Curs</div>
+                        <div class="metric-value green">3 </div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">IQ Completades Avui</div>
+                        <div class="metric-value">5 </div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">IQ Pendents Avui</div>
+                        <div class="metric-value yellow">4 </div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Quiròfans Actius</div>
+                        <div class="metric-value">3/4 </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ACTIVITAT GENERAL -->
+            <div class="panel">
+                <div class="panel-title">ACTIVITAT GENERAL 2025</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Total Intervencions</div>
+                        <div class="metric-value">4.927</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Cirurgia Programada</div>
+                        <div class="metric-value">3.520</div>
+                        <div class="metric-subtext">71% del total</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">CMA</div>
+                        <div class="metric-value">2.608</div>
+                        <div class="metric-subtext">Taxa: 74.09%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Cirurgia Urgent</div>
+                        <div class="metric-value">276</div>
+                        <div class="metric-subtext">6% del total</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temps Espera Mitjà</div>
+                        <div class="metric-value yellow">129 dies</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ratio Activitat</div>
+                        <div class="metric-value green">85% </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LLISTA ESPERA COMPLETA -->
+            <div class="panel">
+                <div class="panel-title">LLISTA ESPERA QUIRÚRGICA - DETALL</div>
+                
+                <div style="background: #0095DA; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.9em; opacity: 0.9;">Total Pacients en Llista</div>
+                        <div style="font-size: 2.5em; font-weight: bold;">1.752</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.5em; font-weight: bold;">33</div>
+                        <div style="font-size: 0.85em;">En baixa temporal</div>
+                    </div>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Llista Espera Quirúrgica</th>
+                        <th style="text-align: center;">Totals</th>
+                        <th style="text-align: center;">Baixa Temp</th>
+                        <th style="text-align: center;">Fora Garantia</th>
+                    </tr>
+                    <tr>
+                        <td style="color: #ff4d4f;">0-Sense garantia</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">8</td>
+                        <td style="text-align: center;">0</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #ff4d4f;">1-Neoplàsies garantia 45 dies</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">7</td>
+                        <td style="text-align: center;">0</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #faad14;">2-Neoplàsies garantia 60 dies</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">9</td>
+                        <td style="text-align: center;">2</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #faad14;">4-Garantia prioritat preferent (90 dies)</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">6</td>
+                        <td style="text-align: center;">0</td>
+                        <td style="text-align: center; background: rgba(250, 173, 20, 0.2); font-weight: bold;">1</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #52c41a;">5-Garantia prioritat mitjana (180 dies)</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">167</td>
+                        <td style="text-align: center;">9</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #3b7dd6;">7-Seguiment prioritat preferent (90 dies)</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">117</td>
+                        <td style="text-align: center;">0</td>
+                        <td style="text-align: center; background: rgba(250, 173, 20, 0.2); font-weight: bold;">2</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #d8d9da;">8-Seguiment prioritat mitjana (180 dies)</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">179</td>
+                        <td style="text-align: center;">3</td>
+                        <td style="text-align: center; background: rgba(250, 173, 20, 0.2); font-weight: bold;">2</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #d8d9da;">9-Seguiment prioritat bàsica (365 dies)</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 1.1em;">1.259</td>
+                        <td style="text-align: center;">19</td>
+                        <td style="text-align: center; background: rgba(250, 173, 20, 0.2); font-weight: bold;">22</td>
+                    </tr>
+                    <tr style="background: #0095DA; font-weight: bold;">
+                        <td>TOTAL</td>
+                        <td style="text-align: center; font-size: 1.3em;">1.752</td>
+                        <td style="text-align: center; font-size: 1.1em;">33</td>
+                        <td style="text-align: center; font-size: 1.1em;">27</td>
+                    </tr>
+                </table>
+                
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 15px; font-size: 0.9em; line-height: 1.6;">
+                    <strong>📊 Font:</strong> PDF LLEIQ_202512.pdf<br>
+                    <strong>📝 Total:</strong> 1.752 pacients actius<br>
+                    <strong>⏰ Temps demora mitjà:</strong> 129 dies
+                </div>
+            </div>
+            
+            <!-- INCIDÈNCIES -->
+            <div class="panel">
+                <div class="panel-title">INCIDÈNCIES</div>
+                <div style="display: grid; gap: 10px;">
+                    <div class="panel-note panel-note-red">
+                        <strong>BQ:</strong> IQ programades durant la tarda. Èxitus pacient post IQ urologia. Es gestiona amb HJXXIII autopsia del difunt.
+                    </div>
+                    <div class="panel-note panel-note-green">
+                        <strong>2ª Planta/CMA:</strong> Sense incidències.
+                    </div>
+                    <div class="panel-note panel-note-green">
+                        <strong>Sala Parts:</strong> Sense incidències.
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="screen-consultes" class="screen">
+            
+            <!-- VISITES PROGRAMADES AVUI -->
+            <div class="panel">
+                <div class="panel-title">VISITES PROGRAMADES AVUI</div>
+                <div style="background: #0095DA; padding: 20px; border-radius: 8px; display: flex; justify-content: space-around;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">68 *</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Total Visites</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">32 *</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Primeres</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">36 *</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Segones</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TEMPS ESPERA -->
+            <div class="panel">
+                <div class="panel-title">TEMPS D'ESPERA</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Temps de Demora</div>
+                        <div class="metric-value yellow">45 dies </div>
+                        <div class="metric-subtext">Temps que porten esperant</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temps d'Espera</div>
+                        <div class="metric-value">62 dies </div>
+                        <div class="metric-subtext">Temps que han trigat</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ACTIVITAT GENERAL -->
+            <div class="panel">
+                <div class="panel-title">ACTIVITAT GENERAL - DESEMBRE 2025</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Primeres Visites</div>
+                        <div class="metric-value">3.232</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Segones Visites</div>
+                        <div class="metric-value">6.722</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Proves Diagnòstiques</div>
+                        <div class="metric-value">1.240 </div>
+                        <div class="metric-subtext">Lab + Radiologia</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temps Real Mitjà</div>
+                        <div class="metric-value green">15 min </div>
+                        <div class="metric-subtext">Durada consulta</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Total Visites</div>
+                        <div class="metric-value">9.954</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Ratio 2ª/1ª</div>
+                        <div class="metric-value">2.08</div>
+                        <div class="metric-subtext">Segones per primera</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        
+        <!-- FARMÀCIA -->
+        <div id="screen-farmacia" class="screen">
+            <div class="panel">
+                <div class="panel-title">RESUM CONSUM DESEMBRE 2025</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Consum Total</div>
+                        <div class="metric-value blue">287.4K€</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Variació</div>
+                        <div class="metric-value green">+8.5%</div>
+                        <div class="metric-subtext">vs 2024</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Cost Mitjà</div>
+                        <div class="metric-value">156€</div>
+                        <div class="metric-subtext">Per pacient</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Acumulat 2025</div>
+                        <div class="metric-value">3.2M€</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">TOP 5 SERVEIS PER CONSUM</div>
+                <table>
+                    <tr>
+                        <th>Servei</th>
+                        <th>Consum</th>
+                        <th>Variació</th>
+                    </tr>
+                    <tr>
+                        <td>Medicina Interna</td>
+                        <td><span style="color: #3b7dd6; font-size: 1.2em;">167.7K€</span></td>
+                        <td><span style="color: #52c41a;">+18.1%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dermatologia</td>
+                        <td>69.5K€</td>
+                        <td><span style="color: #52c41a;">+58.0%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Neurologia</td>
+                        <td>48.0K€</td>
+                        <td><span style="color: #52c41a;">+172.2%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Geriatria</td>
+                        <td>7.0K€</td>
+                        <td><span style="color: #52c41a;">+1.2%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Pneumologia</td>
+                        <td>5.9K€</td>
+                        <td><span style="color: #52c41a;">+30.6%</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+<!-- PADES -->
+        <div id="screen-pades" class="screen">
+            <div class="panel">
+                <div class="panel-title">PADES - ATENCIÓ PAL·LIATIVA</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Pacients PADES</div>
+                        <div class="metric-value">28</div>
+                        <div class="metric-subtext">Cures pal·liatives actuals</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">ℹ️ SOBRE PADES</div>
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; line-height: 1.8;">
+                    <strong>PADES</strong> (Programa d'Atenció Domiciliària - Equips de Suport) proporciona 
+                    atenció pal·liativa i suport a pacients en situació de final de vida, així com 
+                    suport a les seves famílies, en l'entorn domiciliari.
+                </div>
+            </div>
+        </div>
+
+<!-- HISTÒRIC -->
+        <div id="screen-historic" class="screen">
+            <div class="panel">
+                <div class="panel-title">📈 DADES HISTÒRIQUES I ACUMULATS - DESEMBRE 2025</div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">Urgències - Evolució Mensual</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Urgències Ateses</h3>
+                        <canvas id="chartUrgenciesHistoric"></canvas>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Taxa Hospitalització</h3>
+                        <canvas id="chartHospitalitzacioHistoric"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">Quiròfan - Evolució Mensual</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Intervencions per Mes</h3>
+                        <canvas id="chartQuirofanHistoric"></canvas>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Taxa CMA</h3>
+                        <canvas id="chartCMAHistoric"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">Ocupació - Evolució Mensual</div>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3 style="margin-bottom: 15px;">Ocupació per Planta</h3>
+                    <canvas id="chartOcupacioHistoric"></canvas>
+                </div>
+            </div>
+        </div>
+
+        
+    <!-- DIÀLISI -->
+    <div id="screen-dialisi" class="screen">
+        <div class="panel">
+            <div class="panel-title">ESTAT ACTUAL DIÀLISI</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Sessions en Realització</div>
+                    <div class="metric-value blue">8 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pacients Aïllats</div>
+                    <div class="metric-value yellow">2 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Diàlisi Convencional</div>
+                    <div class="metric-value">5 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Diàlisi Online</div>
+                    <div class="metric-value green">3 </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+    <!-- TIC -->
+    <div id="screen-tic" class="screen">
+        <div class="panel">
+            <div class="panel-title">ESTAT ACTUAL TIC</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Incidències Pendents</div>
+                    <div class="metric-value yellow">12 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">% Ocupació Equip</div>
+                    <div class="metric-value blue">78% </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+<script>
+        // DATOS BASE CON DESGLOSE POR GÉNERO
+        const datosBase = {
+            urgencies: {
+                tots: { en_atencio: 9, sala_espera: 3, temps_mig: 41, ingressos: 6, altes: 28 },
+                dones: { en_atencio: 5, sala_espera: 2, temps_mig: 43, ingressos: 3, altes: 15 },
+                homes: { en_atencio: 4, sala_espera: 1, temps_mig: 39, ingressos: 3, altes: 13 }
+            },
+            hospitalitzacio: {
+                tots: { planta4: 17, planta5: 24, uga: 10 },
+                dones: { planta4: 9, planta5: 13, uga: 5 },
+                homes: { planta4: 8, planta5: 11, uga: 5 }
+            }
+        };
+
+        // FILTERS
+        function updateFilters() {
+            const genere = document.getElementById('filterGenere').value;
+            const edat = document.getElementById('filterEdat').value;
+            
+            let filterText = 'Desembre 2025';
+            if (genere !== 'tots') {
+                filterText += ' | ' + document.getElementById('filterGenere').selectedOptions[0].text;
+            }
+            if (edat !== 'tots') {
+                filterText += ' | ' + document.getElementById('filterEdat').selectedOptions[0].text;
+            }
+            if (genere === 'tots' && edat === 'tots') {
+                filterText += ' | Tots els filtres actius';
+            }
+            document.getElementById('activeFilters').textContent = filterText;
+            
+            // Aplicar filtros a los datos
+            aplicarFiltros(genere, edat);
+        }
+
+        function aplicarFiltros(genere, edat) {
+            // Obtener datos según género
+            const datos = datosBase.urgencies[genere];
+            const datosHosp = datosBase.hospitalitzacio[genere];
+            
+            // Factor edad (distribución aproximada)
+            let factorEdat = 1.0;
+            if (edat === '0-18') factorEdat = 0.20;
+            else if (edat === '19-45') factorEdat = 0.26;
+            else if (edat === '46-65') factorEdat = 0.30;
+            else if (edat === '66+') factorEdat = 0.24;
+            
+            // ACTUALIZAR URGÈNCIES con getElementById
+            const urgAtencio = document.getElementById('urg-atencio');
+            const urgEspera = document.getElementById('urg-espera');
+            const urgCritics = document.getElementById('urg-critics');
+            const urgAillats = document.getElementById('urg-aillats');
+            const urgTemps = document.getElementById('urg-temps');
+            const urgIngressos = document.getElementById('urg-ingressos');
+            
+            if (urgAtencio) urgAtencio.textContent = Math.round(datos.en_atencio * factorEdat);
+            if (urgEspera) urgEspera.textContent = Math.round(datos.sala_espera * factorEdat);
+            if (urgCritics) urgCritics.textContent = Math.round(datos.en_atencio * factorEdat * 0.22) + ' *';
+            if (urgAillats) urgAillats.textContent = Math.round(datos.sala_espera * factorEdat * 0.67);
+            if (urgTemps) urgTemps.textContent = Math.round(datos.temps_mig * factorEdat) + ' min';
+            if (urgIngressos) urgIngressos.textContent = Math.round(datos.ingressos * factorEdat);
+            
+            // ACTUALIZAR HOSPITALITZACIÓ con getElementById
+            const hospP4 = document.getElementById('hosp-p4');
+            const hospP5 = document.getElementById('hosp-p5');
+            const hospUga = document.getElementById('hosp-uga');
+            
+            if (hospP4) hospP4.textContent = Math.round(datosHosp.planta4 * factorEdat);
+            if (hospP5) hospP5.textContent = Math.round(datosHosp.planta5 * factorEdat);
+            if (hospUga) hospUga.textContent = Math.round(datosHosp.uga * factorEdat);
+
+            console.log('✅ FILTRES APLICATS:', { 
+                genere, 
+                edat, 
+                factorEdat,
+                'En Atenció': urgAtencio ? Math.round(datos.en_atencio * factorEdat) : 'NO ENCONTRADO',
+                'Sala Espera': urgEspera ? Math.round(datos.sala_espera * factorEdat) : 'NO ENCONTRADO'
+            });
+        }
+
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById('screen-' + screenName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('ca-ES');
+        }
+        setInterval(updateTime, 1000);
+    </script>
+
+    
+    <!-- DIÀLISI -->
+    <div id="screen-dialisi" class="screen">
+        <div class="panel">
+            <div class="panel-title">ESTAT ACTUAL DIÀLISI</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Sessions en Realització</div>
+                    <div class="metric-value blue">8 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pacients Aïllats</div>
+                    <div class="metric-value yellow">2 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Diàlisi Convencional</div>
+                    <div class="metric-value">5 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Diàlisi Online</div>
+                    <div class="metric-value green">3 </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+    <!-- TIC -->
+    <div id="screen-tic" class="screen">
+        <div class="panel">
+            <div class="panel-title">ESTAT ACTUAL TIC</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Incidències Pendents</div>
+                    <div class="metric-value yellow">12 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">% Ocupació Equip</div>
+                    <div class="metric-value blue">78% </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+<script>
+        const chartColors = {
+            primary: '#4A90E2',
+            secondary: '#0095DA',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
+
+        const mesos = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des'];
+
+        // Urgències Historic
+        new Chart(document.getElementById('chartUrgenciesHistoric'), {
+            type: 'line',
+            data: {
+                labels: mesos,
+                datasets: [{
+                    label: 'Urgències ateses',
+                    data: [2717, 2526, 2674, 2533, 2659, 2792, 2828, 2921, 2546, 2698, 2596, 2905],
+                    borderColor: chartColors.primary,
+                    backgroundColor: chartColors.primary + '20',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Hospitalització Historic
+        new Chart(document.getElementById('chartHospitalitzacioHistoric'), {
+            type: 'line',
+            data: {
+                labels: mesos,
+                datasets: [{
+                    label: '% Hospitalitzades',
+                    data: [8.06, 6.89, 8.45, 7.22, 6.84, 6.09, 7.39, 6.26, 7.38, 7.67, 7.55, 7.47],
+                    borderColor: chartColors.danger,
+                    backgroundColor: chartColors.danger + '20',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Quirofan Historic  
+        new Chart(document.getElementById('chartQuirofanHistoric'), {
+            type: 'bar',
+            data: {
+                labels: mesos,
+                datasets: [{
+                    label: 'Intervencions',
+                    data: [420, 385, 445, 398, 432, 401, 389, 360, 405, 445, 418, 429],
+                    backgroundColor: chartColors.success
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // CMA Historic
+        new Chart(document.getElementById('chartCMAHistoric'), {
+            type: 'line',
+            data: {
+                labels: mesos,
+                datasets: [{
+                    label: 'Taxa CMA %',
+                    data: [72, 71, 73, 70, 74, 72, 75, 73, 72, 74, 73, 74],
+                    borderColor: chartColors.info,
+                    backgroundColor: chartColors.info + '20',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 65,
+                        max: 80,
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Ocupació Historic
+        new Chart(document.getElementById('chartOcupacioHistoric'), {
+            type: 'line',
+            data: {
+                labels: mesos,
+                datasets: [
+                    {
+                        label: 'Planta 4ª',
+                        data: [78.75, 68.78, 62.78, 77.80, 55.97, 67.42, 86.53, 84.93, 71.68, 67.97, 72.16, 76.86],
+                        borderColor: chartColors.success,
+                        backgroundColor: chartColors.success + '20',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Planta 5ª',
+                        data: [83.30, 82.94, 74.82, 75.23, 65.88, 61.49, 57.50, 56.91, 66.05, 73.64, 70.29, 76.98],
+                        borderColor: chartColors.warning,
+                        backgroundColor: chartColors.warning + '20',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- PANTALLA LABORATORI -->
+    <div id="screen-laboratori" class="screen">
+        <div class="panel">
+            <div class="panel-title">LABORATORI - Resum Desembre 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Proves</div>
+                    <div class="metric-value blue">33,215</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Preu Total</div>
+                    <div class="metric-value green">109,157 €</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Variació vs Nov</div>
+                    <div class="metric-value red">-16.17% ▼</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves/Dia (mitjana)</div>
+                    <div class="metric-value">1,072</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Top 5 Serveis (Núm. Proves)</div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>1. Servei d'Urgències</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">9,921 proves</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>2. Medicina Interna</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">8,227 proves</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>3. Nefrologia</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">2,777 proves</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>4. Hematologia Clínica</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">2,030 proves</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>5. Reumatologia</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">1,592 proves</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Altres Serveis Destacats</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Ginecologia</div>
+                    <div class="metric-value">644</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Urologia</div>
+                    <div class="metric-value">690</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Cardiologia</div>
+                    <div class="metric-value">696</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pediatria</div>
+                    <div class="metric-value">865</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Endocrinologia</div>
+                    <div class="metric-value">904</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Gastroenterologia</div>
+                    <div class="metric-value">929</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA REHABILITACIÓ -->
+    <div id="screen-rehabilitacio" class="screen">
+        <div class="panel">
+            <div class="panel-title">REHABILITACIÓ - Resum Desembre 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Sessions</div>
+                    <div class="metric-value blue">51,096</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Episodis Administratius</div>
+                    <div class="metric-value green">3,233</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Visites Úniques</div>
+                    <div class="metric-value">164</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Processos Facturables</div>
+                    <div class="metric-value">3,397</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Activitat per Centres</div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Hospital Pius Valls</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">36,519 sessions</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Montblanc</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">9,480 sessions</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Alcover</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">2,542 sessions</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Vilarodona</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">2,555 sessions</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Tipus de Tractaments</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Electroteràpia</div>
+                    <div class="metric-value blue">61,180</div>
+                    <div style="font-size: 0.8em; color: var(--muted); margin-top: 5px;">tècniques</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Fisioteràpia</div>
+                    <div class="metric-value green">56,951</div>
+                    <div style="font-size: 0.8em; color: var(--muted); margin-top: 5px;">tècniques</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Logoteràpia</div>
+                    <div class="metric-value">1,687</div>
+                    <div style="font-size: 0.8em; color: var(--muted); margin-top: 5px;">tècniques</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Teràpia Ocupacional</div>
+                    <div class="metric-value">1,443</div>
+                    <div style="font-size: 0.8em; color: var(--muted); margin-top: 5px;">tècniques</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">📊 Complexitat Episodes</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Alta Complexitat</div>
+                    <div class="metric-value">698</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Mitjana Complexitat</div>
+                    <div class="metric-value">1,897</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Baixa Complexitat</div>
+                    <div class="metric-value">143</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Molt Alta</div>
+                    <div class="metric-value red">42</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DIAGNÒSTIC IMATGE (MOCK DATA) -->
+    <div id="screen-diagnostic" class="screen">
+        <div class="panel">
+            <div class="panel-title">DIAGNÒSTIC IMATGE - Resum Desembre 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Proves</div>
+                    <div class="metric-value blue">4,852 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves Urgents</div>
+                    <div class="metric-value red">1,247 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves Programades</div>
+                    <div class="metric-value green">3,605 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps Mig Espera</div>
+                    <div class="metric-value">12 dies </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Tipus de Proves Realitzades</div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Radiografia (RX)</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">2,834 *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Ecografia</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">1,245 *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>TAC</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">548 *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Ressonància Magnètica (RM)</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">225 *</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">📊 Distribució per Serveis</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Urgències</div>
+                    <div class="metric-value">1,247 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Medicina Interna</div>
+                    <div class="metric-value">892 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Traumatologia</div>
+                    <div class="metric-value">745 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Cardiologia</div>
+                    <div class="metric-value">523 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pneumologia</div>
+                    <div class="metric-value">412 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Altres</div>
+                    <div class="metric-value">1,033 </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-note panel-note-warn">
+                <strong>Nota:</strong> Dades marcades amb * són estimacions pendents de validació amb dades reals del PDF ACTIVITAT_RX_202512.pdf
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA HOSPITAL DE DIA (MOCK DATA) -->
+    <div id="screen-hospital-dia" class="screen">
+        <div class="panel">
+            <div class="panel-title">HOSPITAL DE DIA - Resum Desembre 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Pacients Actius</div>
+                    <div class="metric-value blue">87 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Altes del Mes</div>
+                    <div class="metric-value green">23 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Ingressos del Mes</div>
+                    <div class="metric-value">28 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Sessions Realitzades</div>
+                    <div class="metric-value">1,845 </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Tipus de Tractaments</div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Quimioteràpia</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">782 sessions *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Immunoteràpia</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">345 sessions *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Transfusions</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">418 sessions *</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Altres Tractaments</strong></span>
+                    <span style="color: var(--primary); font-weight: 600;">300 sessions *</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">📊 Indicadors de Qualitat</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Ocupació Mitjana</div>
+                    <div class="metric-value green">78% </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps Mig Estada</div>
+                    <div class="metric-value">4.2 hores </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Satisfacció Pacients</div>
+                    <div class="metric-value green">8.7/10 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Cancel·lacions</div>
+                    <div class="metric-value yellow">12 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Sessions/Pacient</div>
+                    <div class="metric-value">21.2 </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Personal Actiu</div>
+                    <div class="metric-value">15 </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-note panel-note-warn">
+                <strong>Nota:</strong> Dades marcades amb * són estimacions pendents de validació amb dades reals del PDF Hospital_de_dia_PHV_202512.pdf
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
