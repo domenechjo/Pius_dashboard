@@ -316,11 +316,26 @@
         .badge.yellow { background: #fff3cd; color: #856404; }
         .badge.red { background: #f8d7da; color: #721c24; }
         .badge.blue { background: #d1ecf1; color: #0c5460; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 0;
+            opacity: 0.9;
+            font-size: 0.95em;
+            padding: 0 20px;
+        }
+        .back-link:hover { opacity: 1; }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <a href="index.html" class="back-link">← Tornar a l'inici</a>
     <div class="header">
         <div class="header-left">
             <img src="data:image/gif;base64,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" alt="Hospital Pius de Valls" class="logo">
