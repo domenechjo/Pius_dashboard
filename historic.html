@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Pius de Valls - Quadre de Comandament Històric</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #0095DA;
+            --primary-700: #4A90E2;
+            --primary-rgb: 0,149,218;
+            --accent: #3b7dd6;
+            --success: #52c41a;
+            --warn: #faad14;
+            --danger: #ff4d4f;
+            --card-bg: rgba(255,255,255,0.95);
+            --muted: #5a6c7d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "IBM Plex Sans", "Source Sans 3", "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+        .container { max-width: none; width: 100%; margin: 0; padding: 0; }
+        .header {
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .logo { height: 80px; width: auto; }
+        .title-section h1 { color: var(--primary); font-size: 2.1em; font-weight: 700; margin-bottom: 5px; }
+        .title-section .subtitle { color: #0f2233; font-size: 1.35em; font-weight: 700; }
+        .title-section .title-meta { color: var(--muted); font-size: 0.95em; font-weight: 500; margin-top: 4px; }
+
+        .month-selector {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 2px solid var(--primary-700);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .month-selector label { font-weight: 600; color: var(--primary); font-size: 0.95em; }
+        .month-selector select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-700);
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #0095DA;
+            cursor: pointer;
+            background: white;
+        }
+
+        .nav-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            justify-content: center;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, var(--btn-hover-start, #5A9EF5) 0%, var(--btn-hover-end, #1BA3E5) 100%);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--btn-active-start, #0078D4) 0%, var(--btn-active-end, #005A9E) 100%);
+            box-shadow: 0 6px 20px rgba(0, 120, 212, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        :root { --btn-hover-start: #5A9EF5; --btn-hover-end: #1BA3E5; --btn-active-start: #0078D4; --btn-active-end: #005A9E; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .panel-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-700);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .metric-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #4A90E2;
+            transition: all 0.3s ease;
+        }
+        .metric-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+        }
+        .metric-label { font-size: 0.95em; color: #5a6c7d; margin-bottom: 8px; font-weight: 500; }
+        .metric-value { font-size: 2.5em; font-weight: 700; color: #0095DA; }
+        .metric-value.blue { color: #4A90E2; }
+        .metric-value.green { color: #28a745; }
+        .metric-value.red { color: #dc3545; }
+        .metric-value.warn { color: #ffc107; }
+        .metric-sub { font-size: 0.85em; color: #6c757d; margin-top: 5px; }
+        .metric-sub .up { color: var(--success); font-weight: 600; }
+        .metric-sub .down { color: var(--danger); font-weight: 600; }
+
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .chart-box { background: #f8f9fa; padding: 20px; border-radius: 8px; }
+        .chart-box h3 { margin-bottom: 15px; font-size: 0.95em; color: #2c3e50; }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        .data-table th {
+            background: linear-gradient(135deg, #4A90E2 0%, #0095DA 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .data-table td { padding: 15px; border-bottom: 1px solid #e9ecef; }
+        .data-table tr:nth-child(even) { background: #f8f9fa; }
+        .data-table tr:hover { background: #f8f9fa; }
+        .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .var-up { color: var(--success); font-weight: 600; }
+        .var-down { color: var(--danger); font-weight: 600; }
+
+        .summary-bar { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .summary-item {
+            background: #f0f7ff;
+            border-left: 3px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            flex: 1;
+            min-width: 200px;
+        }
+        .summary-item .si-label { font-size: 0.85em; color: var(--muted); }
+        .summary-item .si-value { font-size: 1.6em; font-weight: 700; color: var(--primary); }
+        .summary-item .si-var { font-size: 0.85em; margin-top: 2px; }
+
+        .panel-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(var(--primary-rgb), 0.06);
+            color: #000;
+            border-radius: 4px;
+            font-size: 0.95em;
+            line-height: 1.45;
+        }
+        .panel-note-green { border-left: 3px solid var(--success); }
+        .panel-note-warn { border-left: 3px solid var(--warn); }
+        .panel-note-blue { border-left: 3px solid var(--accent); }
+        .panel-note-red { border-left: 3px solid var(--danger); }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: white; text-decoration: none; font-weight: 600; margin-bottom: 10px;
+            opacity: 0.9; font-size: 0.95em;
+        }
+        .back-link:hover { opacity: 1; }
+        @media(max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .title-section h1 { font-size: 1.5em; }
+            .nav-container { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← Tornar a l'inici</a>
+
+    <div class="header">
+        <div class="header-left">
+            <img src="data:image/gif;base64,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" alt="Logo Hospital Pius" class="logo">
+            <div class="title-section">
+                <h1>Quadre de Comandament</h1>
+                <div class="subtitle">Vista Històrica</div>
+                <div class="title-meta">Dades acumulades any 2025 · Comparativa amb 2024</div>
+            </div>
+        </div>
+        <div class="month-selector">
+            <label>📅 Període:</label>
+            <select id="selMonth" onchange="updateMonth()">
+                <option value="12" selected>Desembre 2025</option>
+                <option value="11">Novembre 2025</option>
+                <option value="10">Octubre 2025</option>
+                <option value="9">Setembre 2025</option>
+                <option value="8">Agost 2025</option>
+                <option value="7">Juliol 2025</option>
+                <option value="6">Juny 2025</option>
+                <option value="5">Maig 2025</option>
+                <option value="4">Abril 2025</option>
+                <option value="3">Març 2025</option>
+                <option value="2">Febrer 2025</option>
+                <option value="1">Gener 2025</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="nav-container">
+        <button class="nav-btn active" onclick="showScreen('resum')">RESUM ANUAL</button>
+        <button class="nav-btn" onclick="showScreen('urgencies')">URGÈNCIES</button>
+        <button class="nav-btn" onclick="showScreen('hosp')">HOSPITALITZACIÓ</button>
+        <button class="nav-btn" onclick="showScreen('quirofan')">QUIRÒFAN</button>
+        <button class="nav-btn" onclick="showScreen('consultes')">CONSULTES</button>
+        <button class="nav-btn" onclick="showScreen('farmacia')">FARMÀCIA</button>
+        <button class="nav-btn" onclick="showScreen('pades')">PADES</button>
+        <button class="nav-btn" onclick="showScreen('laboratori')">LABORATORI</button>
+        <button class="nav-btn" onclick="showScreen('rehabilitacio')">REHABILITACIÓ</button>
+        <button class="nav-btn" onclick="showScreen('diagnostic')">DIAGNÒSTIC IMATGE</button>
+        <button class="nav-btn" onclick="showScreen('hospdia')">HOSPITAL DE DIA</button>
+        <button class="nav-btn" onclick="showScreen('dialisi')">DIÀLISI</button>
+        <button class="nav-btn" onclick="showScreen('tic')">TIC</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: RESUM ANUAL -->
+    <!-- ============================================================ -->
+    <div id="screen-resum" class="screen active">
+        <div class="panel">
+            <div class="panel-title">📊 RESUM ACTIVITAT ACUMULADA - ANY 2025</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="si-label">Urgències Totals</div>
+                    <div class="si-value">32.395</div>
+                    <div class="si-var"><span class="var-up">▲ +3,51%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Altes Hospitalització</div>
+                    <div class="si-value">6.640</div>
+                    <div class="si-var"><span class="var-down">▼ -0,45%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Intervencions Quirúrgiques</div>
+                    <div class="si-value">4.927</div>
+                    <div class="si-var"><span class="var-up">▲ +1,50%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Visites CEX Totals</div>
+                    <div class="si-value">127.085</div>
+                    <div class="si-var"><span class="var-up">▲ +0,30%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Indicadors Clau</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Estada Mitjana Convencional</div>
+                    <div class="metric-value blue">4,15</div>
+                    <div class="metric-sub"><span class="up">▲ -2,16%</span> vs 2024</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Índex Ocupació Plantes</div>
+                    <div class="metric-value blue">71,99%</div>
+                    <div class="metric-sub">Mitjana anual Pl. 4ª + 5ª</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Taxa CMA</div>
+                    <div class="metric-value green">64,56%</div>
+                    <div class="metric-sub"><span class="down">▼ -1,83%</span> vs 2024</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">% Visites Virtuals</div>
+                    <div class="metric-value green">20,10%</div>
+                    <div class="metric-sub"><span class="up">▲ vs 2024</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Mortalitat Conv.</div>
+                    <div class="metric-value">2,95%</div>
+                    <div class="metric-sub">107 èxitus / any</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps Urgències</div>
+                    <div class="metric-value green">3h 36'</div>
+                    <div class="metric-sub"><span class="up">▲ -5,64%</span> vs 2024</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Rati 2es/1es CEX</div>
+                    <div class="metric-value">1,93</div>
+                    <div class="metric-sub"><span class="up">▲ millora</span> vs 2,15 (2024)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Cirurgia Oncològica</div>
+                    <div class="metric-value blue">673</div>
+                    <div class="metric-sub"><span class="up">▲ +4,14%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Evolució Mensual - Principals Indicadors</div>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>Urgències Ateses per Mes</h3>
+                    <canvas id="chartResumUrg"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Altes Hospitalització per Mes</h3>
+                    <canvas id="chartResumAltes"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Intervencions Quirúrgiques per Mes</h3>
+                    <canvas id="chartResumIQ"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Visites CEX per Mes</h3>
+                    <canvas id="chartResumCEX"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Llista d'Espera Quirúrgica (tancament Desembre 2025)</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total en Llista</div>
+                    <div class="metric-value blue">1.752</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Fora de Garantia</div>
+                    <div class="metric-value red">27</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Baixa Temporal</div>
+                    <div class="metric-value warn">33</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Llista d'Espera CEX Primeres Visites (tancament Desembre 2025)</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total en Llista</div>
+                    <div class="metric-value blue">4.435</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps Mig Demora</div>
+                    <div class="metric-value warn">81 dies</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Fora de Termini</div>
+                    <div class="metric-value red">1.244 (28,05%)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: URGÈNCIES -->
+    <!-- ============================================================ -->
+    <div id="screen-urgencies" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 URGÈNCIES - EVOLUCIÓ MENSUAL 2025</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="si-label">Total Urgències 2025</div>
+                    <div class="si-value">32.395</div>
+                    <div class="si-var"><span class="var-up">▲ +3,51%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Urgències/Dia (Mitjana)</div>
+                    <div class="si-value">89</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">% Hospitalitzades (Aguts)</div>
+                    <div class="si-value">7,29%</div>
+                    <div class="si-var"><span class="var-down">▼ -0,61%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Defuncions Urgències</div>
+                    <div class="si-value">127</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Urgències Ateses per Mes</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Indicador</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Urgències ateses</strong></td><td class="num">2.717</td><td class="num">2.526</td><td class="num">2.674</td><td class="num">2.533</td><td class="num">2.659</td><td class="num">2.792</td><td class="num">2.828</td><td class="num">2.921</td><td class="num">2.546</td><td class="num">2.698</td><td class="num">2.596</td><td class="num">2.905</td><td class="num"><strong>32.395</strong></td></tr>
+                    <tr><td>Urgències/dia</td><td class="num">88</td><td class="num">91</td><td class="num">87</td><td class="num">85</td><td class="num">86</td><td class="num">94</td><td class="num">92</td><td class="num">95</td><td class="num">85</td><td class="num">88</td><td class="num">87</td><td class="num">94</td><td class="num"><strong>89</strong></td></tr>
+                    <tr><td>Hospitalitzades (Aguts)</td><td class="num">219</td><td class="num">174</td><td class="num">226</td><td class="num">183</td><td class="num">182</td><td class="num">170</td><td class="num">209</td><td class="num">183</td><td class="num">188</td><td class="num">207</td><td class="num">196</td><td class="num">217</td><td class="num"><strong>2.354</strong></td></tr>
+                    <tr><td>% Hospitalitzades</td><td class="num">8,06%</td><td class="num">6,89%</td><td class="num">8,45%</td><td class="num">7,22%</td><td class="num">6,84%</td><td class="num">6,09%</td><td class="num">7,39%</td><td class="num">6,26%</td><td class="num">7,38%</td><td class="num">7,67%</td><td class="num">7,55%</td><td class="num">7,47%</td><td class="num"><strong>7,29%</strong></td></tr>
+                    <tr><td>Defuncions</td><td class="num">13</td><td class="num">12</td><td class="num">14</td><td class="num">15</td><td class="num">11</td><td class="num">10</td><td class="num">11</td><td class="num">7</td><td class="num">7</td><td class="num">6</td><td class="num">6</td><td class="num">15</td><td class="num"><strong>127</strong></td></tr>
+                    <tr><td>Altes voluntàries</td><td class="num">13</td><td class="num">11</td><td class="num">6</td><td class="num">6</td><td class="num">10</td><td class="num">12</td><td class="num">15</td><td class="num">6</td><td class="num">4</td><td class="num">5</td><td class="num">8</td><td class="num">12</td><td class="num"><strong>108</strong></td></tr>
+                    <tr><td>Reiteracions ≤72h</td><td class="num">164</td><td class="num">163</td><td class="num">201</td><td class="num">191</td><td class="num">158</td><td class="num">167</td><td class="num">213</td><td class="num">206</td><td class="num">158</td><td class="num">161</td><td class="num">163</td><td class="num">190</td><td class="num"><strong>2.135</strong></td></tr>
+                    <tr><td>% Reiteracions ≤72h</td><td class="num">6,04%</td><td class="num">6,45%</td><td class="num">7,52%</td><td class="num">7,54%</td><td class="num">5,94%</td><td class="num">5,98%</td><td class="num">7,53%</td><td class="num">7,05%</td><td class="num">6,21%</td><td class="num">5,97%</td><td class="num">6,28%</td><td class="num">6,54%</td><td class="num"><strong>6,60%</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Urgències Pediàtriques (&lt;15 anys) - Evolució Mensual</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Indicador</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Urgències ateses</strong></td><td class="num">155</td><td class="num">110</td><td class="num">121</td><td class="num">113</td><td class="num">131</td><td class="num">139</td><td class="num">137</td><td class="num">114</td><td class="num">102</td><td class="num">125</td><td class="num">101</td><td class="num">158</td><td class="num"><strong>1.506</strong></td></tr>
+                    <tr><td>% Reiteracions ≤72h</td><td class="num">5,16%</td><td class="num">5,45%</td><td class="num">4,13%</td><td class="num">7,96%</td><td class="num">3,05%</td><td class="num">5,04%</td><td class="num">5,11%</td><td class="num">5,26%</td><td class="num">3,92%</td><td class="num">3,20%</td><td class="num">3,96%</td><td class="num">4,43%</td><td class="num"><strong>4,72%</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Gràfics Evolució</div>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>Urgències Ateses per Mes</h3>
+                    <canvas id="chartUrgAteses"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>% Hospitalització des d'Urgències</h3>
+                    <canvas id="chartUrgHosp"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Urgències PCC/MACA - Acumulat 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total PCC/MACA</div>
+                    <div class="metric-value blue">2.966</div>
+                    <div class="metric-sub"><span class="up">▲ +31,47%</span> vs 2024 (2.256)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">PCC</div>
+                    <div class="metric-value">2.555</div>
+                    <div class="metric-sub"><span class="up">▲ +38,11%</span> vs 2024</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">MACA</div>
+                    <div class="metric-value">411</div>
+                    <div class="metric-sub"><span class="up">▲ +1,23%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: HOSPITALITZACIÓ -->
+    <!-- ============================================================ -->
+    <div id="screen-hosp" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 HOSPITALITZACIÓ - EVOLUCIÓ MENSUAL 2025</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="si-label">Altes Totals</div>
+                    <div class="si-value">6.640</div>
+                    <div class="si-var"><span class="var-down">▼ -0,45%</span> vs 6.670 (2024)</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Convencionals</div>
+                    <div class="si-value">3.631</div>
+                    <div class="si-var"><span class="var-down">▼ -2,26%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">CMA</div>
+                    <div class="si-value">2.710</div>
+                    <div class="si-var"><span class="var-up">▲ +3,40%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Estada Mitjana Conv.</div>
+                    <div class="si-value">4,15 dies</div>
+                    <div class="si-var"><span class="var-up">▲ -2,16%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Altes per Mes</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Concepte</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th><th class="num">2024</th><th class="num">Δ</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Altes Totals</strong></td><td class="num">635</td><td class="num">542</td><td class="num">660</td><td class="num">502</td><td class="num">611</td><td class="num">508</td><td class="num">468</td><td class="num">432</td><td class="num">441</td><td class="num">686</td><td class="num">600</td><td class="num">555</td><td class="num"><strong>6.640</strong></td><td class="num">6.670</td><td class="num var-down">-0,45%</td></tr>
+                    <tr><td>Convencional</td><td class="num">330</td><td class="num">285</td><td class="num">339</td><td class="num">290</td><td class="num">301</td><td class="num">255</td><td class="num">304</td><td class="num">264</td><td class="num">247</td><td class="num">355</td><td class="num">334</td><td class="num">327</td><td class="num"><strong>3.631</strong></td><td class="num">3.715</td><td class="num var-down">-2,26%</td></tr>
+                    <tr><td>CMA</td><td class="num">273</td><td class="num">224</td><td class="num">292</td><td class="num">187</td><td class="num">283</td><td class="num">234</td><td class="num">141</td><td class="num">148</td><td class="num">172</td><td class="num">307</td><td class="num">242</td><td class="num">207</td><td class="num"><strong>2.710</strong></td><td class="num">2.621</td><td class="num var-up">+3,40%</td></tr>
+                    <tr><td>HaD</td><td class="num">32</td><td class="num">33</td><td class="num">29</td><td class="num">25</td><td class="num">27</td><td class="num">19</td><td class="num">23</td><td class="num">20</td><td class="num">22</td><td class="num">24</td><td class="num">24</td><td class="num">21</td><td class="num"><strong>299</strong></td><td class="num">334</td><td class="num var-down">-10,48%</td></tr>
+                    <tr><td>PCC</td><td class="num">88</td><td class="num">59</td><td class="num">84</td><td class="num">73</td><td class="num">76</td><td class="num">53</td><td class="num">79</td><td class="num">62</td><td class="num">82</td><td class="num">94</td><td class="num">75</td><td class="num">96</td><td class="num"><strong>921</strong></td><td class="num">734</td><td class="num var-up">+25,48%</td></tr>
+                    <tr><td>MACA</td><td class="num">7</td><td class="num">8</td><td class="num">13</td><td class="num">15</td><td class="num">12</td><td class="num">11</td><td class="num">14</td><td class="num">16</td><td class="num">8</td><td class="num">19</td><td class="num">11</td><td class="num">16</td><td class="num"><strong>150</strong></td><td class="num">147</td><td class="num var-up">+2,04%</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Estades i Qualitat</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Indicador</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Estades totals</strong></td><td class="num">1.710</td><td class="num">1.407</td><td class="num">1.626</td><td class="num">1.382</td><td class="num">1.377</td><td class="num">1.306</td><td class="num">1.579</td><td class="num">1.314</td><td class="num">1.279</td><td class="num">1.528</td><td class="num">1.398</td><td class="num">1.650</td><td class="num"><strong>17.556</strong></td></tr>
+                    <tr><td>Estada mitj. conv.</td><td class="num">4,44</td><td class="num">4,20</td><td class="num">4,18</td><td class="num">4,09</td><td class="num">3,69</td><td class="num">4,29</td><td class="num">4,45</td><td class="num">4,39</td><td class="num">4,43</td><td class="num">3,71</td><td class="num">3,72</td><td class="num">4,44</td><td class="num"><strong>4,15</strong></td></tr>
+                    <tr><td>Mortalitat conv.</td><td class="num">3,64%</td><td class="num">2,81%</td><td class="num">2,95%</td><td class="num">2,76%</td><td class="num">2,99%</td><td class="num">2,75%</td><td class="num">3,95%</td><td class="num">3,79%</td><td class="num">4,05%</td><td class="num">2,82%</td><td class="num">1,80%</td><td class="num">1,53%</td><td class="num"><strong>2,95%</strong></td></tr>
+                    <tr><td>Nre. èxitus</td><td class="num">12</td><td class="num">8</td><td class="num">10</td><td class="num">8</td><td class="num">9</td><td class="num">7</td><td class="num">12</td><td class="num">10</td><td class="num">10</td><td class="num">10</td><td class="num">6</td><td class="num">5</td><td class="num"><strong>107</strong></td></tr>
+                    <tr><td>% Altes &lt;12h15</td><td class="num">21,52%</td><td class="num">22,11%</td><td class="num">22,71%</td><td class="num">22,41%</td><td class="num">30,23%</td><td class="num">26,67%</td><td class="num">23,36%</td><td class="num">21,21%</td><td class="num">25,91%</td><td class="num">29,58%</td><td class="num">25,15%</td><td class="num">22,63%</td><td class="num"><strong>24,48%</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Gràfics Evolució Hospitalització</div>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>Altes Totals per Mes (Conv. + CMA + HaD)</h3>
+                    <canvas id="chartHospAltes"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Ocupació Plantes (% Mensual)</h3>
+                    <canvas id="chartHospOcupacio"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: QUIRÒFAN -->
+    <!-- ============================================================ -->
+    <div id="screen-quirofan" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 ACTIVITAT QUIRÚRGICA - EVOLUCIÓ MENSUAL 2025</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="si-label">Intervencions Totals</div>
+                    <div class="si-value">4.927</div>
+                    <div class="si-var"><span class="var-up">▲ +1,50%</span> vs 4.854 (2024)</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Majors</div>
+                    <div class="si-value">3.793</div>
+                    <div class="si-var"><span class="var-up">▲ +1,12%</span></div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Menors (en Quiròfan)</div>
+                    <div class="si-value">1.134</div>
+                    <div class="si-var"><span class="var-up">▲ +2,81%</span></div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Temps Ocupació</div>
+                    <div class="si-value">3.475 h</div>
+                    <div class="si-var"><span class="var-up">▲ +3,96%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Intervencions per Quiròfan</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Quiròfan</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th><th class="num">2024</th><th class="num">Δ</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>2a. planta</td><td class="num">110</td><td class="num">93</td><td class="num">122</td><td class="num">68</td><td class="num">99</td><td class="num">95</td><td class="num">32</td><td class="num">35</td><td class="num">70</td><td class="num">127</td><td class="num">79</td><td class="num">76</td><td class="num"><strong>1.006</strong></td><td class="num">875</td><td class="num var-up">+14,97%</td></tr>
+                    <tr><td>Quiròfan 1</td><td class="num">79</td><td class="num">73</td><td class="num">86</td><td class="num">76</td><td class="num">88</td><td class="num">79</td><td class="num">34</td><td class="num">57</td><td class="num">51</td><td class="num">96</td><td class="num">82</td><td class="num">65</td><td class="num"><strong>866</strong></td><td class="num">928</td><td class="num var-down">-6,68%</td></tr>
+                    <tr><td>Quiròfan 2</td><td class="num">105</td><td class="num">84</td><td class="num">103</td><td class="num">76</td><td class="num">106</td><td class="num">90</td><td class="num">70</td><td class="num">51</td><td class="num">53</td><td class="num">111</td><td class="num">94</td><td class="num">85</td><td class="num"><strong>1.028</strong></td><td class="num">982</td><td class="num var-up">+4,68%</td></tr>
+                    <tr><td>Quiròfan 3</td><td class="num">124</td><td class="num">123</td><td class="num">133</td><td class="num">105</td><td class="num">126</td><td class="num">89</td><td class="num">74</td><td class="num">49</td><td class="num">57</td><td class="num">155</td><td class="num">130</td><td class="num">83</td><td class="num"><strong>1.248</strong></td><td class="num">1.239</td><td class="num var-up">+0,73%</td></tr>
+                    <tr><td>Quiròfan CIR</td><td class="num">21</td><td class="num">31</td><td class="num">31</td><td class="num">30</td><td class="num">33</td><td class="num">19</td><td class="num">23</td><td class="num">8</td><td class="num">35</td><td class="num">27</td><td class="num">28</td><td class="num">14</td><td class="num"><strong>300</strong></td><td class="num">281</td><td class="num var-up">+6,76%</td></tr>
+                    <tr><td>Quiròfan DER</td><td class="num">37</td><td class="num">28</td><td class="num">43</td><td class="num">27</td><td class="num">39</td><td class="num">40</td><td class="num">32</td><td class="num">31</td><td class="num">45</td><td class="num">46</td><td class="num">49</td><td class="num">47</td><td class="num"><strong>464</strong></td><td class="num">455</td><td class="num var-up">+1,98%</td></tr>
+                    <tr style="font-weight:700; background:#e8f4fd;"><td><strong>TOTAL</strong></td><td class="num">491</td><td class="num">432</td><td class="num">518</td><td class="num">382</td><td class="num">491</td><td class="num">412</td><td class="num">265</td><td class="num">231</td><td class="num">311</td><td class="num">562</td><td class="num">462</td><td class="num">370</td><td class="num"><strong>4.927</strong></td><td class="num">4.854</td><td class="num var-up">+1,50%</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Anul·lacions d'Intervencions</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Anul·lacions 2025</div>
+                    <div class="metric-value red">791</div>
+                    <div class="metric-sub"><span class="up">▲ -24,23%</span> vs 1.044 (2024)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Decisió Pacient</div>
+                    <div class="metric-value">267</div>
+                    <div class="metric-sub">33,76% del total</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Decisió Facultatiu</div>
+                    <div class="metric-value">148</div>
+                    <div class="metric-sub">18,71% del total</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Duplicitat</div>
+                    <div class="metric-value">96</div>
+                    <div class="metric-sub"><span class="down">▲ +41,18%</span> vs 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Gràfics Evolució Quirúrgica</div>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>Intervencions Totals per Mes</h3>
+                    <canvas id="chartIQTotal"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Temps Ocupació Quiròfans (Hores)</h3>
+                    <canvas id="chartIQHores"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: CONSULTES -->
+    <!-- ============================================================ -->
+    <div id="screen-consultes" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 CONSULTES EXTERNES - EVOLUCIÓ MENSUAL 2025</div>
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <div class="si-label">Visites Totals</div>
+                    <div class="si-value">127.085</div>
+                    <div class="si-var"><span class="var-up">▲ +0,30%</span> vs 2024</div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Primeres Visites</div>
+                    <div class="si-value">43.334</div>
+                    <div class="si-var"><span class="var-up">▲ +6,83%</span></div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">Segones Visites</div>
+                    <div class="si-value">83.751</div>
+                    <div class="si-var"><span class="var-down">▼ -2,78%</span></div>
+                </div>
+                <div class="summary-item">
+                    <div class="si-label">% Visites Virtuals</div>
+                    <div class="si-value">20,10%</div>
+                    <div class="si-var"><span class="var-up">▲ +4,86%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Visites per Mes</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Tipus</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Primeres</strong></td><td class="num">3.452</td><td class="num">3.409</td><td class="num">4.048</td><td class="num">3.875</td><td class="num">3.828</td><td class="num">3.538</td><td class="num">3.808</td><td class="num">2.583</td><td class="num">3.580</td><td class="num">4.201</td><td class="num">3.780</td><td class="num">3.232</td><td class="num"><strong>43.334</strong></td></tr>
+                    <tr><td><strong>Segones</strong></td><td class="num">6.765</td><td class="num">6.693</td><td class="num">7.544</td><td class="num">6.976</td><td class="num">7.723</td><td class="num">6.843</td><td class="num">6.972</td><td class="num">4.809</td><td class="num">6.792</td><td class="num">8.251</td><td class="num">7.661</td><td class="num">6.722</td><td class="num"><strong>83.751</strong></td></tr>
+                    <tr style="font-weight:700; background:#e8f4fd;"><td><strong>TOTAL</strong></td><td class="num">10.217</td><td class="num">10.102</td><td class="num">11.592</td><td class="num">10.851</td><td class="num">11.551</td><td class="num">10.381</td><td class="num">10.780</td><td class="num">7.392</td><td class="num">10.372</td><td class="num">12.452</td><td class="num">11.441</td><td class="num">9.954</td><td class="num"><strong>127.085</strong></td></tr>
+                    <tr><td>Rati 2es/1es</td><td class="num">1,96</td><td class="num">1,96</td><td class="num">1,86</td><td class="num">1,80</td><td class="num">2,02</td><td class="num">1,93</td><td class="num">1,83</td><td class="num">1,86</td><td class="num">1,90</td><td class="num">1,96</td><td class="num">2,03</td><td class="num">2,08</td><td class="num"><strong>1,93</strong></td></tr>
+                    <tr><td>% No Presentades</td><td class="num">6,03%</td><td class="num">6,33%</td><td class="num">5,57%</td><td class="num">6,40%</td><td class="num">5,96%</td><td class="num">5,65%</td><td class="num">6,60%</td><td class="num">7,33%</td><td class="num">6,18%</td><td class="num">5,83%</td><td class="num">6,62%</td><td class="num">7,87%</td><td class="num"><strong>6,32%</strong></td></tr>
+                    <tr><td>% Virtuals</td><td class="num">19,82%</td><td class="num">19,61%</td><td class="num">19,83%</td><td class="num">22,62%</td><td class="num">19,29%</td><td class="num">20,62%</td><td class="num">20,91%</td><td class="num">20,63%</td><td class="num">20,33%</td><td class="num">18,89%</td><td class="num">20,00%</td><td class="num">18,91%</td><td class="num"><strong>20,10%</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Gràfics Evolució CEX</div>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>Visites Totals per Mes (1es + 2es)</h3>
+                    <canvas id="chartCEXTotal"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>% Visites Virtuals per Mes</h3>
+                    <canvas id="chartCEXVirtual"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Llista d'Espera Primeres Visites per Especialitat (Desembre 2025 - CatSalut)</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Especialitat</th><th class="num">Pacients en Llista</th><th class="num">Temps Mig Demora</th><th class="num">Fora Termini</th><th class="num">% Fora Termini</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Traumatologia</td><td class="num">824</td><td class="num">77 dies</td><td class="num">250</td><td class="num var-down">30,34%</td></tr>
+                    <tr><td>Rehabilitació</td><td class="num">531</td><td class="num">50 dies</td><td class="num">23</td><td class="num">4,33%</td></tr>
+                    <tr><td>Oftalmologia</td><td class="num">428</td><td class="num">59 dies</td><td class="num">79</td><td class="num var-down">18,46%</td></tr>
+                    <tr><td>ORL</td><td class="num">398</td><td class="num">60 dies</td><td class="num">72</td><td class="num var-down">18,09%</td></tr>
+                    <tr><td>Ginecologia</td><td class="num">380</td><td class="num">56 dies</td><td class="num">56</td><td class="num">14,74%</td></tr>
+                    <tr><td>Al·lèrgia</td><td class="num">361</td><td class="num">92 dies</td><td class="num">178</td><td class="num var-down">49,31%</td></tr>
+                    <tr><td>Pneumologia</td><td class="num">285</td><td class="num">209 dies</td><td class="num">204</td><td class="num var-down">71,58%</td></tr>
+                    <tr><td>Clínica del Dolor</td><td class="num">281</td><td class="num">209 dies</td><td class="num">225</td><td class="num var-down">80,07%</td></tr>
+                    <tr><td>Dermatologia</td><td class="num">144</td><td class="num">40 dies</td><td class="num">10</td><td class="num">6,94%</td></tr>
+                    <tr><td>Pediatria</td><td class="num">121</td><td class="num">75 dies</td><td class="num">44</td><td class="num var-down">36,36%</td></tr>
+                    <tr style="font-weight:700; background:#e8f4fd;"><td><strong>TOTAL</strong></td><td class="num"><strong>4.435</strong></td><td class="num"><strong>81 dies</strong></td><td class="num"><strong>1.244</strong></td><td class="num"><strong>28,05%</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: FARMÀCIA -->
+    <!-- ============================================================ -->
+    <div id="screen-farmacia" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 FARMÀCIA - CONSUM ACUMULAT 2025</div>
+            <div class="panel-note panel-note-blue">Dades de consum farmacèutic per servei. Font: Hospital Joan XXIII (servei compartit).</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Principals Serveis per Consum MHDA (Acumulat 2025 vs 2024)</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Servei</th><th class="num">Acumulat 2025 (€)</th><th class="num">Acumulat 2024 (€)</th><th class="num">Variació</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Dermatologia</td><td class="num">591.556</td><td class="num">452.733</td><td class="num var-up">+30,66%</td></tr>
+                    <tr><td>Al·lergologia</td><td class="num">208.160</td><td class="num">191.949</td><td class="num var-up">+8,45%</td></tr>
+                    <tr><td>Anàlisis Clíniques</td><td class="num">18.457</td><td class="num">21.417</td><td class="num var-down">-13,82%</td></tr>
+                    <tr><td>Endocrinologia</td><td class="num">6.177</td><td class="num">7.002</td><td class="num var-down">-11,78%</td></tr>
+                    <tr><td>Clínica del Dolor</td><td class="num">2.552</td><td class="num">413</td><td class="num var-up">+518,06%</td></tr>
+                    <tr><td>Convalescència (MHDA)</td><td class="num">1.997</td><td class="num">3.913</td><td class="num var-down">-48,96%</td></tr>
+                    <tr><td>Anestesiologia</td><td class="num">1.803</td><td class="num">2.044</td><td class="num var-down">-11,81%</td></tr>
+                    <tr><td>COT (MHDA)</td><td class="num">882</td><td class="num">285</td><td class="num var-up">+209,39%</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Principals Serveis per Consum Resta (Acumulat 2025 vs 2024)</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Servei</th><th class="num">Acumulat 2025 (€)</th><th class="num">Acumulat 2024 (€)</th><th class="num">Variació</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Convalescència</td><td class="num">54.653</td><td class="num">64.242</td><td class="num var-down">-14,93%</td></tr>
+                    <tr><td>Cirurgia General</td><td class="num">12.893</td><td class="num">18.688</td><td class="num var-down">-31,01%</td></tr>
+                    <tr><td>COT</td><td class="num">10.844</td><td class="num">12.130</td><td class="num var-down">-10,60%</td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: PADES -->
+    <!-- ============================================================ -->
+    <div id="screen-pades" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 PADES - DADES ACUMULADES 2025</div>
+            <div class="panel-note panel-note-blue">Programa d'Atenció Domiciliària i Equips de Suport. Inclou PADES Geriàtric i PADES Pal·liatiu.</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">PADES Pal·liatiu - Visites CEX 2025</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Tipus</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Primeres visites</td><td class="num">5</td><td class="num">2</td><td class="num">6</td><td class="num">19</td><td class="num">21</td><td class="num">18</td><td class="num">22</td><td class="num">17</td><td class="num">27</td><td class="num">24</td><td class="num">22</td><td class="num">11</td><td class="num"><strong>194</strong></td></tr>
+                    <tr><td>Segones visites</td><td class="num">290</td><td class="num">210</td><td class="num">278</td><td class="num">353</td><td class="num">446</td><td class="num">410</td><td class="num">455</td><td class="num">374</td><td class="num">571</td><td class="num">427</td><td class="num">314</td><td class="num">306</td><td class="num"><strong>4.434</strong></td></tr>
+                    <tr style="font-weight:700; background:#e8f4fd;"><td><strong>TOTAL</strong></td><td class="num">295</td><td class="num">212</td><td class="num">284</td><td class="num">372</td><td class="num">467</td><td class="num">428</td><td class="num">477</td><td class="num">391</td><td class="num">598</td><td class="num">451</td><td class="num">336</td><td class="num">317</td><td class="num"><strong>4.628</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">PADES Geriàtric - Visites CEX 2025</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Tipus</th><th class="num">Gen</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">Mai</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Ago</th><th class="num">Set</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Des</th><th class="num">TOTAL</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Primeres visites</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">11</td><td class="num">5</td><td class="num">2</td><td class="num">4</td><td class="num">2</td><td class="num">5</td><td class="num">6</td><td class="num">9</td><td class="num">5</td><td class="num"><strong>49</strong></td></tr>
+                    <tr><td>Segones visites</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td><td class="num"><strong>1</strong></td></tr>
+                    <tr style="font-weight:700; background:#e8f4fd;"><td><strong>TOTAL</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">11</td><td class="num">5</td><td class="num">2</td><td class="num">4</td><td class="num">3</td><td class="num">5</td><td class="num">6</td><td class="num">9</td><td class="num">6</td><td class="num"><strong>51</strong></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: LABORATORI -->
+    <!-- ============================================================ -->
+    <div id="screen-laboratori" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 LABORATORI - DADES ACUMULADES 2025</div>
+            <div class="panel-note panel-note-blue">Servei compartit amb Hospital Joan XXIII. Dades corresponents a proves sol·licitades des de Pius Hospital de Valls.</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Resum Laboratori *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Proves Acumulat *</div>
+                    <div class="metric-value blue">403.520</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves Desembre *</div>
+                    <div class="metric-value">33.215</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves/Dia (Des.) *</div>
+                    <div class="metric-value">1.072</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">* Dades estimades. Pendent confirmació informe definitiu Lab.</div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: REHABILITACIÓ -->
+    <!-- ============================================================ -->
+    <div id="screen-rehabilitacio" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 REHABILITACIÓ - DADES ACUMULADES 2025</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Resum Rehabilitació *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Sessions Acumulat *</div>
+                    <div class="metric-value blue">51.096</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Episodis Acumulat *</div>
+                    <div class="metric-value green">3.233</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pacients en LE CEX</div>
+                    <div class="metric-value warn">531</div>
+                    <div class="metric-sub">Temps mig demora: 50 dies</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">* Dades estimades basades en informe parcial disponible.</div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: DIAGNÒSTIC IMATGE -->
+    <!-- ============================================================ -->
+    <div id="screen-diagnostic" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 DIAGNÒSTIC PER LA IMATGE - DADES ACUMULADES 2025</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Resum Radiologia *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Total Exploracions Acumulat *</div>
+                    <div class="metric-value blue">42.850</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Radiologia Convencional *</div>
+                    <div class="metric-value">28.120</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">TAC *</div>
+                    <div class="metric-value">8.430</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Ecografia *</div>
+                    <div class="metric-value">6.300</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">* Dades estimades. Pendent informe definitiu RX.</div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: HOSPITAL DE DIA -->
+    <!-- ============================================================ -->
+    <div id="screen-hospdia" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 HOSPITAL DE DIA - DADES ACUMULADES 2025</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Activitat Intermèdia - Control Pressupostari 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">HD Geriàtric (Estades)</div>
+                    <div class="metric-value blue">2.360</div>
+                    <div class="metric-sub">Pressupost: 2.470 | <span class="down">95,55%</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">HD Psicogeriatric (Estades)</div>
+                    <div class="metric-value blue">6.185</div>
+                    <div class="metric-sub">Pressupost: 5.928 | <span class="up">104,34%</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Convalescència (Estades)</div>
+                    <div class="metric-value">11.056</div>
+                    <div class="metric-sub">Pressupost: 11.595 | <span class="down">95,35%</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Llarga Estada (Estades)</div>
+                    <div class="metric-value">16.118</div>
+                    <div class="metric-sub">Pressupost: 16.507 | <span class="down">97,64%</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Altes Intermèdia 2025</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Pal·liatius (Altes)</div>
+                    <div class="metric-value">62</div>
+                    <div class="metric-sub">Pressupost: 38 | <span class="up">163,16%</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Subaguts (Altes)</div>
+                    <div class="metric-value">84</div>
+                    <div class="metric-sub">Pressupost: 83 | <span class="up">101,20%</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: DIÀLISI -->
+    <!-- ============================================================ -->
+    <div id="screen-dialisi" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 DIÀLISI - DADES ACUMULADES 2025</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Resum Diàlisi *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Sessions Totals Acumulat *</div>
+                    <div class="metric-value blue">4.680</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pacients Actius (Des.) *</div>
+                    <div class="metric-value">30</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Sessions/Setmana *</div>
+                    <div class="metric-value">90</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">* Dades estimades. Pendent informe definitiu Nefrologia.</div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: TIC -->
+    <!-- ============================================================ -->
+    <div id="screen-tic" class="screen">
+        <div class="panel">
+            <div class="panel-title">📊 TIC - DADES ACUMULADES 2025</div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Resum Incidències TIC *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Incidències Registrades *</div>
+                    <div class="metric-value blue">2.340</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps Mig Resolució *</div>
+                    <div class="metric-value green">4,2h</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">% Resoltes &lt;24h *</div>
+                    <div class="metric-value green">87%</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">* Dades estimades. Pendent informe definitiu UTI.</div>
+        </div>
+    </div>
+
+</div><!-- /container -->
+
+<script>
+    // ---- NAVIGATION ----
+    function showScreen(name) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('screen-' + name).classList.add('active');
+        event.target.classList.add('active');
+        window.scrollTo({top: 200, behavior: 'smooth'});
+    }
+
+    function updateMonth() {
+        // Placeholder: in a real implementation, this would reload data for the selected month
+        const m = document.getElementById('selMonth').value;
+        console.log('Month selected:', m);
+    }
+
+    // ---- CHART.JS CONFIG ----
+    const mesos = ['Gen','Feb','Mar','Abr','Mai','Jun','Jul','Ago','Set','Oct','Nov','Des'];
+    const C = {
+        primary: '#0095DA',
+        accent: '#3b7dd6',
+        success: '#28a745',
+        warn: '#ffc107',
+        danger: '#dc3545',
+        info: '#17a2b8',
+        purple: '#6f42c1',
+        orange: '#fd7e14'
+    };
+    const commonOpts = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } }
+    };
+
+    // RESUM - Urgències
+    new Chart(document.getElementById('chartResumUrg'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Urgències 2025',
+                data: [2717,2526,2674,2533,2659,2792,2828,2921,2546,2698,2596,2905],
+                borderColor: C.primary, backgroundColor: C.primary+'20', tension: 0.4, fill: true
+            }]
+        },
+        options: commonOpts
+    });
+
+    // RESUM - Altes
+    new Chart(document.getElementById('chartResumAltes'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [
+                { label: 'Convencional', data: [330,285,339,290,301,255,304,264,247,355,334,327], backgroundColor: C.primary },
+                { label: 'CMA', data: [273,224,292,187,283,234,141,148,172,307,242,207], backgroundColor: C.info },
+                { label: 'HaD', data: [32,33,29,25,27,19,23,20,22,24,24,21], backgroundColor: C.warn }
+            ]
+        },
+        options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:true, position:'top' }}, scales:{ x:{stacked:true}, y:{stacked:true} } }
+    });
+
+    // RESUM - IQ
+    new Chart(document.getElementById('chartResumIQ'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Intervencions',
+                data: [491,432,518,382,491,412,265,231,311,562,462,370],
+                backgroundColor: C.success
+            }]
+        },
+        options: commonOpts
+    });
+
+    // RESUM - CEX
+    new Chart(document.getElementById('chartResumCEX'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Visites CEX',
+                data: [10217,10102,11592,10851,11551,10381,10780,7392,10372,12452,11441,9954],
+                borderColor: C.purple, backgroundColor: C.purple+'20', tension: 0.4, fill: true
+            }]
+        },
+        options: commonOpts
+    });
+
+    // URGENCIES - Ateses
+    new Chart(document.getElementById('chartUrgAteses'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Urgències ateses',
+                data: [2717,2526,2674,2533,2659,2792,2828,2921,2546,2698,2596,2905],
+                borderColor: C.primary, backgroundColor: C.primary+'20', tension: 0.4, fill: true,
+                pointRadius: 4, pointBackgroundColor: C.primary
+            }]
+        },
+        options: commonOpts
+    });
+
+    // URGENCIES - % Hospitalització
+    new Chart(document.getElementById('chartUrgHosp'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: '% Hospitalitzades',
+                data: [8.06,6.89,8.45,7.22,6.84,6.09,7.39,6.26,7.38,7.67,7.55,7.47],
+                borderColor: C.danger, backgroundColor: C.danger+'20', tension: 0.4, fill: true,
+                pointRadius: 4, pointBackgroundColor: C.danger
+            }]
+        },
+        options: {
+            ...commonOpts,
+            scales: { y: { beginAtZero:true, max:10, ticks:{ callback: v => v+'%' } } }
+        }
+    });
+
+    // HOSP - Altes
+    new Chart(document.getElementById('chartHospAltes'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [
+                { label: 'Convencional', data: [330,285,339,290,301,255,304,264,247,355,334,327], backgroundColor: C.primary },
+                { label: 'CMA', data: [273,224,292,187,283,234,141,148,172,307,242,207], backgroundColor: C.info },
+                { label: 'HaD', data: [32,33,29,25,27,19,23,20,22,24,24,21], backgroundColor: C.warn }
+            ]
+        },
+        options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{display:true, position:'top'} }, scales:{x:{stacked:true},y:{stacked:true}} }
+    });
+
+    // HOSP - Ocupació
+    new Chart(document.getElementById('chartHospOcupacio'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [
+                {
+                    label: 'Planta 4ª',
+                    data: [78.75,68.78,62.78,77.80,55.97,67.42,86.53,84.93,71.68,67.97,72.16,76.86],
+                    borderColor: C.success, tension: 0.4, pointRadius: 3
+                },
+                {
+                    label: 'Planta 5ª',
+                    data: [83.30,82.94,74.82,75.23,65.88,61.49,57.50,56.91,66.05,73.64,70.29,76.98],
+                    borderColor: C.warn, tension: 0.4, pointRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:true,
+            plugins:{ legend:{display:true, position:'top'} },
+            scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback: v=>v+'%' } } }
+        }
+    });
+
+    // QUIROFAN - IQ Total
+    new Chart(document.getElementById('chartIQTotal'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Intervencions Totals',
+                data: [491,432,518,382,491,412,265,231,311,562,462,370],
+                backgroundColor: C.success
+            }]
+        },
+        options: commonOpts
+    });
+
+    // QUIROFAN - Hores
+    new Chart(document.getElementById('chartIQHores'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: 'Hores Ocupació',
+                data: [308,321,350,308,331,288,191,202,177,391,349,259],
+                backgroundColor: C.accent
+            }]
+        },
+        options: commonOpts
+    });
+
+    // CEX - Total
+    new Chart(document.getElementById('chartCEXTotal'), {
+        type: 'bar',
+        data: {
+            labels: mesos,
+            datasets: [
+                { label: 'Primeres', data: [3452,3409,4048,3875,3828,3538,3808,2583,3580,4201,3780,3232], backgroundColor: C.primary },
+                { label: 'Segones', data: [6765,6693,7544,6976,7723,6843,6972,4809,6792,8251,7661,6722], backgroundColor: C.info+'90' }
+            ]
+        },
+        options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{display:true, position:'top'} }, scales:{x:{stacked:true},y:{stacked:true}} }
+    });
+
+    // CEX - % Virtual
+    new Chart(document.getElementById('chartCEXVirtual'), {
+        type: 'line',
+        data: {
+            labels: mesos,
+            datasets: [{
+                label: '% Virtuals',
+                data: [19.82,19.61,19.83,22.62,19.29,20.62,20.91,20.63,20.33,18.89,20.00,18.91],
+                borderColor: C.purple, backgroundColor: C.purple+'20', tension: 0.4, fill: true,
+                pointRadius: 4, pointBackgroundColor: C.purple
+            }]
+        },
+        options: {
+            ...commonOpts,
+            scales: { y: { beginAtZero:false, min:15, max:25, ticks:{ callback: v=>v+'%' } } }
+        }
+    });
+</script>
+</body>
+</html>
