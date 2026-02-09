@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Pius de Valls - Quadre de Comandament Predictiu</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #0095DA;
+            --primary-700: #4A90E2;
+            --primary-rgb: 0,149,218;
+            --accent: #3b7dd6;
+            --success: #52c41a;
+            --warn: #faad14;
+            --danger: #ff4d4f;
+            --card-bg: rgba(255,255,255,0.95);
+            --muted: #5a6c7d;
+            --btn-hover-start: #5A9EF5; --btn-hover-end: #1BA3E5;
+            --btn-active-start: #0078D4; --btn-active-end: #005A9E;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "IBM Plex Sans", "Source Sans 3", "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+        .container { max-width: none; width: 100%; margin: 0; padding: 0; }
+        .header {
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .logo { height: 80px; width: auto; }
+        .title-section h1 { color: var(--primary); font-size: 2.1em; font-weight: 700; margin-bottom: 5px; }
+        .title-section .subtitle { color: #0f2233; font-size: 1.35em; font-weight: 700; }
+        .title-section .title-meta { color: var(--muted); font-size: 0.95em; font-weight: 500; margin-top: 4px; }
+        .method-badge {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.95);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 2px solid var(--primary-700);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 320px;
+        }
+        .method-badge .mb-title { font-weight: 600; color: var(--primary); font-size: 0.9em; }
+        .method-badge .mb-desc { font-size: 0.8em; color: var(--muted); line-height: 1.3; }
+        .nav-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border: 2px solid rgba(255,255,255,0.5);
+            justify-content: center;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary) 100%);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, var(--btn-hover-start) 0%, var(--btn-hover-end) 100%);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--btn-active-start) 0%, var(--btn-active-end) 100%);
+            box-shadow: 0 6px 20px rgba(0,120,212,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .panel {
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .panel-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-700);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .metric-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #4A90E2;
+            transition: all 0.3s ease;
+        }
+        .metric-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.2);
+        }
+        .metric-box.alert-green { border-left-color: var(--success); }
+        .metric-box.alert-warn { border-left-color: var(--warn); }
+        .metric-box.alert-red { border-left-color: var(--danger); }
+        .metric-label { font-size: 0.95em; color: #5a6c7d; margin-bottom: 8px; font-weight: 500; }
+        .metric-value { font-size: 2.5em; font-weight: 700; color: #0095DA; }
+        .metric-value.blue { color: #4A90E2; }
+        .metric-value.green { color: #28a745; }
+        .metric-value.red { color: #dc3545; }
+        .metric-value.warn { color: #ffc107; }
+        .metric-sub { font-size: 0.85em; color: #6c757d; margin-top: 5px; }
+        .metric-sub .up { color: var(--success); font-weight: 600; }
+        .metric-sub .down { color: var(--danger); font-weight: 600; }
+        .metric-sub .neutral { color: var(--muted); font-weight: 600; }
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .chart-box { background: #f8f9fa; padding: 20px; border-radius: 8px; }
+        .chart-box h3 { margin-bottom: 15px; font-size: 0.95em; color: #2c3e50; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        .data-table th {
+            background: linear-gradient(135deg, #4A90E2 0%, #0095DA 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .data-table td { padding: 15px; border-bottom: 1px solid #e9ecef; }
+        .data-table tr:nth-child(even) { background: #f8f9fa; }
+        .data-table tr:hover { background: #e8f4fd; }
+        .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .var-up { color: var(--success); font-weight: 600; }
+        .var-down { color: var(--danger); font-weight: 600; }
+        .summary-bar { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .summary-item {
+            background: #f0f7ff;
+            border-left: 3px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            flex: 1;
+            min-width: 200px;
+        }
+        .summary-item .si-label { font-size: 0.85em; color: var(--muted); }
+        .summary-item .si-value { font-size: 1.6em; font-weight: 700; color: var(--primary); }
+        .summary-item .si-var { font-size: 0.85em; margin-top: 2px; }
+        .panel-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(var(--primary-rgb), 0.06);
+            color: #000;
+            border-radius: 4px;
+            font-size: 0.95em;
+            line-height: 1.45;
+        }
+        .panel-note-green { border-left: 3px solid var(--success); }
+        .panel-note-warn { border-left: 3px solid var(--warn); }
+        .panel-note-blue { border-left: 3px solid var(--accent); }
+        .panel-note-red { border-left: 3px solid var(--danger); }
+        .semaphore { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+        .sem-green { background: var(--success); }
+        .sem-yellow { background: var(--warn); }
+        .sem-red { background: var(--danger); }
+        .alert-row { background: #fff3cd !important; }
+        .alert-row-red { background: #f8d7da !important; }
+        .trend-tag {
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            font-size: 0.8em; font-weight: 600; margin-left: 8px;
+        }
+        .trend-tag.up { background: #d4edda; color: #155724; }
+        .trend-tag.down { background: #f8d7da; color: #721c24; }
+        .trend-tag.stable { background: #e2e3e5; color: #383d41; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: white; text-decoration: none; font-weight: 600; margin-bottom: 10px;
+            opacity: 0.9; font-size: 0.95em;
+        }
+        .back-link:hover { opacity: 1; }
+        @media(max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .title-section h1 { font-size: 1.5em; }
+            .nav-container { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">&larr; Tornar a l'inici</a>
+
+    <div class="header">
+        <div class="header-left">
+            <img src="data:image/gif;base64,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" alt="Logo Hospital Pius" class="logo">
+            <div class="title-section">
+                <h1>Quadre de Comandament</h1>
+                <div class="subtitle">Vista Predictiva</div>
+                <div class="title-meta">Projeccions 2026 &middot; Basades en tendència 2024&rarr;2025 + estacionalitat</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="nav-container">
+        <button class="nav-btn active" onclick="showScreen('resum')">PROJECCIONS 2026</button>
+        <button class="nav-btn" onclick="showScreen('urgencies')">URGÈNCIES</button>
+        <button class="nav-btn" onclick="showScreen('hosp')">HOSPITALITZACIÓ</button>
+        <button class="nav-btn" onclick="showScreen('quirofan')">QUIRÒFAN</button>
+        <button class="nav-btn" onclick="showScreen('consultes')">CONSULTES</button>
+        <button class="nav-btn" onclick="showScreen('farmacia')">FARMÀCIA</button>
+        <button class="nav-btn" onclick="showScreen('pades')">PADES</button>
+        <button class="nav-btn" onclick="showScreen('laboratori')">LABORATORI</button>
+        <button class="nav-btn" onclick="showScreen('rehabilitacio')">REHABILITACIÓ</button>
+        <button class="nav-btn" onclick="showScreen('diagnostic')">DIAGNÒSTIC IMATGE</button>
+        <button class="nav-btn" onclick="showScreen('hospdia')">HOSPITAL DE DIA</button>
+        <button class="nav-btn" onclick="showScreen('dialisi')">DIÀLISI</button>
+        <button class="nav-btn" onclick="showScreen('tic')">TIC</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: PROJECCIONS 2026 -->
+    <!-- ============================================================ -->
+    <div id="screen-resum" class="screen active">
+        <div class="panel">
+            <div class="panel-title">Projeccions 2026</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Àrea</th>
+                        <th>Real 2024</th>
+                        <th>Real 2025</th>
+                        <th class="num">Tendència</th>
+                        <th class="num">Projecció 2026</th>
+                        <th>Risc</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Urgències ateses</strong></td>
+                        <td class="num">31.296</td>
+                        <td class="num">32.395</td>
+                        <td class="num"><span class="var-down">+3,51%</span></td>
+                        <td class="num"><strong>33.532</strong></td>
+                        <td><span class="semaphore sem-yellow"></span>Demanda creixent</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Altes hospitalització</strong></td>
+                        <td class="num">6.670</td>
+                        <td class="num">6.640</td>
+                        <td class="num"><span class="var-up">-0,45%</span></td>
+                        <td class="num"><strong>6.610</strong></td>
+                        <td><span class="semaphore sem-green"></span>Estable</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;Convencionals</td>
+                        <td class="num">3.715</td>
+                        <td class="num">3.631</td>
+                        <td class="num"><span class="var-down">-2,26%</span></td>
+                        <td class="num">3.549</td>
+                        <td><span class="semaphore sem-yellow"></span>Decreixent</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;CMA</td>
+                        <td class="num">2.621</td>
+                        <td class="num">2.710</td>
+                        <td class="num"><span class="var-up">+3,40%</span></td>
+                        <td class="num">2.802</td>
+                        <td><span class="semaphore sem-green"></span>Creixement saludable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intervencions quirúrgiques</strong></td>
+                        <td class="num">4.854</td>
+                        <td class="num">4.927</td>
+                        <td class="num"><span class="var-up">+1,50%</span></td>
+                        <td class="num"><strong>5.001</strong></td>
+                        <td><span class="semaphore sem-green"></span>Favorable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visites CEX totals</strong></td>
+                        <td class="num">125.154</td>
+                        <td class="num">125.054</td>
+                        <td class="num"><span class="neutral">-0,08%</span></td>
+                        <td class="num"><strong>124.954</strong></td>
+                        <td><span class="semaphore sem-green"></span>Estable</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;Primeres visites</td>
+                        <td class="num">39.810</td>
+                        <td class="num">42.116</td>
+                        <td class="num"><span class="var-up">+5,81%</span></td>
+                        <td class="num">44.563</td>
+                        <td><span class="semaphore sem-green"></span>Millora accessibilitat</td>
+                    </tr>
+                    <tr class="alert-row">
+                        <td><strong>LE Quirúrgica (pacients)</strong></td>
+                        <td class="num">—</td>
+                        <td class="num">1.752</td>
+                        <td class="num"><span class="neutral">—</span></td>
+                        <td class="num"><strong>~1.700</strong></td>
+                        <td><span class="semaphore sem-green"></span>Controlada (27 fora garantia)</td>
+                    </tr>
+                    <tr class="alert-row-red">
+                        <td><strong>LE CEX fora termini</strong></td>
+                        <td class="num">—</td>
+                        <td class="num">1.244 (28%)</td>
+                        <td class="num"><span class="var-down">Creixent</span></td>
+                        <td class="num"><strong>&gt;1.400</strong></td>
+                        <td><span class="semaphore sem-red"></span>Risc penalització CatSalut</td>
+                    </tr>
+                    <tr class="alert-row">
+                        <td><strong>Temps espera CEX (dies)</strong></td>
+                        <td class="num">—</td>
+                        <td class="num">81</td>
+                        <td class="num"><span class="var-down">+48,52%</span></td>
+                        <td class="num"><strong>&gt;100</strong></td>
+                        <td><span class="semaphore sem-red"></span>Tendència molt negativa</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sociosanitari altes</strong></td>
+                        <td class="num">635</td>
+                        <td class="num">594</td>
+                        <td class="num"><span class="var-down">-6,46%</span></td>
+                        <td class="num"><strong>556</strong></td>
+                        <td><span class="semaphore sem-yellow"></span>Descens moderat</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">EVOLUCIÓ PROJECTADA — Indicadors Clau 2026</div>
+            <div class="chart-grid">
+                <div class="chart-box"><h3>Urgències — Real 2025 vs Projecció 2026</h3><canvas id="chartResumUrg"></canvas></div>
+                <div class="chart-box"><h3>Altes Hospitalització — Real 2025 vs Projecció 2026</h3><canvas id="chartResumAltes"></canvas></div>
+                <div class="chart-box"><h3>Intervencions Quirúrgiques — Real 2025 vs Projecció 2026</h3><canvas id="chartResumIQ"></canvas></div>
+                <div class="chart-box"><h3>Visites CEX — Real 2025 vs Projecció 2026</h3><canvas id="chartResumCEX"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">ALERTES ESTRATÈGIQUES</div>
+            <div class="panel-note panel-note-red">
+                <strong>ALERTA CRÍTICA — Llista d'espera CEX:</strong> Amb 4.435 pacients en espera, 81 dies de demora mitja (+48,52% vs 2024) i 28,05% fora de termini, la tendència projecta superar els 100 dies de demora i 1.400 pacients fora de termini el 2026. Especialitats crítiques: Pneumologia (71,58% fora termini), Clínica del Dolor (80,07%), Al·lergologia (49,31%).
+            </div>
+            <div class="panel-note panel-note-warn" style="margin-top:10px;">
+                <strong>ATENCIÓ — Urgències creixents:</strong> La tendència de +3,51% anual projecta superar les 33.500 urgències el 2026. Els mesos d'agost i desembre podrien superar les 3.000 urgències/mes, tensionant la capacitat del servei.
+            </div>
+            <div class="panel-note panel-note-green" style="margin-top:10px;">
+                <strong>POSITIU — CMA i activitat quirúrgica:</strong> La cirurgia major ambulatòria creix (+3,40%) i les anul·lacions baixen (-24,23%). La llista d'espera quirúrgica es manté controlada amb només 27 pacients fora de garantia.
+            </div>
+            <div class="panel-note panel-note-green" style="margin-top:10px;">
+                <strong>POSITIU — Estada mitjana:</strong> L'estada mitjana convencional baixa a 4,15 dies (-2,16%), millorant l'eficiència i alliberant llits.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: URGÈNCIES -->
+    <!-- ============================================================ -->
+    <div id="screen-urgencies" class="screen">
+        <div class="panel">
+            <div class="panel-title">URGÈNCIES — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">Urgències projectades 2026</div>
+                    <div class="metric-value">33.532</div>
+                    <div class="metric-sub"><span class="down">+3,51% vs 2025</span></div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">Mitjana diària projectada</div>
+                    <div class="metric-value">91,9</div>
+                    <div class="metric-sub">2025: 88,8 &middot; 2024: 85,7</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">% Hospitalització proj.</div>
+                    <div class="metric-value blue">7,0%</div>
+                    <div class="metric-sub">Tendència lleugerament descendent</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Temps urgències proj.</div>
+                    <div class="metric-value green">3h 24'</div>
+                    <div class="metric-sub"><span class="up">Millora si es manté tendència -5,64%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Projecció mensual d'urgències 2026</div>
+            <div class="chart-grid">
+                <div class="chart-box"><h3>Urgències ateses — Real 2025 vs Projecció 2026</h3><canvas id="chartUrgMensual"></canvas></div>
+                <div class="chart-box"><h3>Urgències/dia — Projecció 2026</h3><canvas id="chartUrgDia"></canvas></div>
+            </div>
+            <table class="data-table" style="margin-top:20px;">
+                <thead>
+                    <tr><th>Mes</th><th class="num">Real 2025</th><th class="num">Proj. 2026</th><th class="num">Urg/dia 2026</th><th>Alerta</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Gener</td><td class="num">2.717</td><td class="num">2.812</td><td class="num">90,7</td><td></td></tr>
+                    <tr><td>Febrer</td><td class="num">2.526</td><td class="num">2.615</td><td class="num">93,4</td><td></td></tr>
+                    <tr><td>Març</td><td class="num">2.674</td><td class="num">2.768</td><td class="num">89,3</td><td></td></tr>
+                    <tr><td>Abril</td><td class="num">2.533</td><td class="num">2.622</td><td class="num">87,4</td><td></td></tr>
+                    <tr><td>Maig</td><td class="num">2.659</td><td class="num">2.752</td><td class="num">88,8</td><td></td></tr>
+                    <tr><td>Juny</td><td class="num">2.792</td><td class="num">2.890</td><td class="num">96,3</td><td></td></tr>
+                    <tr><td>Juliol</td><td class="num">2.828</td><td class="num">2.927</td><td class="num">94,4</td><td></td></tr>
+                    <tr class="alert-row"><td>Agost</td><td class="num">2.921</td><td class="num">3.024</td><td class="num">97,5</td><td><span class="semaphore sem-yellow"></span>Prop del llindar 100/dia</td></tr>
+                    <tr><td>Setembre</td><td class="num">2.546</td><td class="num">2.635</td><td class="num">87,8</td><td></td></tr>
+                    <tr><td>Octubre</td><td class="num">2.698</td><td class="num">2.793</td><td class="num">90,1</td><td></td></tr>
+                    <tr><td>Novembre</td><td class="num">2.596</td><td class="num">2.687</td><td class="num">89,6</td><td></td></tr>
+                    <tr class="alert-row"><td>Desembre</td><td class="num">2.905</td><td class="num">3.007</td><td class="num">97,0</td><td><span class="semaphore sem-yellow"></span>Prop del llindar 100/dia</td></tr>
+                </tbody>
+            </table>
+            <div class="panel-note panel-note-warn" style="margin-top:15px;">
+                <strong>Estacionalitat detectada:</strong> Agost i Desembre concentren els pics d'activitat. El 2026, ambdós mesos projecten superar les 3.000 urgències, amb mitjanes diàries properes a 100. Setembre és el mes de menor activitat (vall estacional).
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: HOSPITALITZACIÓ -->
+    <!-- ============================================================ -->
+    <div id="screen-hosp" class="screen">
+        <div class="panel">
+            <div class="panel-title">HOSPITALITZACIÓ — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Altes totals proj. 2026</div>
+                    <div class="metric-value">6.610</div>
+                    <div class="metric-sub"><span class="neutral">-0,45% vs 2025</span></div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">CMA projectada</div>
+                    <div class="metric-value green">2.802</div>
+                    <div class="metric-sub"><span class="up">+3,40% — Creixement sostingut</span></div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">Convencionals proj.</div>
+                    <div class="metric-value warn">3.549</div>
+                    <div class="metric-sub"><span class="down">-2,26% — Tendència descendent</span></div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">HaD projectada</div>
+                    <div class="metric-value warn">268</div>
+                    <div class="metric-sub"><span class="down">-10,48% — Caiguda important</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Projecció mensual d'altes i ocupació</div>
+            <div class="chart-grid">
+                <div class="chart-box"><h3>Altes mensuals — Real 2025 vs Projecció 2026</h3><canvas id="chartHospAltes"></canvas></div>
+                <div class="chart-box"><h3>Ocupació plantes — Projecció 2026</h3><canvas id="chartHospOcup"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Indicadors d'eficiència — Projecció</div>
+            <div class="metrics-grid" style="margin-bottom:20px;">
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Estada mitjana proj.</div>
+                    <div class="metric-value green">4,06</div>
+                    <div class="metric-sub"><span class="up">-2,16% — Continua millorant</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Ocupació mitjana proj.</div>
+                    <div class="metric-value blue">71,0%</div>
+                    <div class="metric-sub">2025: 71,99% &middot; Marge disponible</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Mortalitat proj.</div>
+                    <div class="metric-value">2,90%</div>
+                    <div class="metric-sub">2025: 2,95% &middot; Tendència estable</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">% Altes &lt;12h15 proj.</div>
+                    <div class="metric-value green">24,5%</div>
+                    <div class="metric-sub">2025: 24,48% &middot; Estable</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue">
+                <strong>Anàlisi:</strong> La substitució d'hospitalització convencional per CMA és una tendència positiva que millora l'eficiència. L'estada mitjana en descens allibera llits. La caiguda d'HaD (-10,48%) és el punt feble — cal investigar si és per manca de derivació o per canvi de model assistencial.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: QUIRÒFAN -->
+    <!-- ============================================================ -->
+    <div id="screen-quirofan" class="screen">
+        <div class="panel">
+            <div class="panel-title">QUIRÒFAN — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Intervencions proj. 2026</div>
+                    <div class="metric-value green">5.001</div>
+                    <div class="metric-sub"><span class="up">+1,50% vs 2025</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps ocupació proj.</div>
+                    <div class="metric-value blue">3.613 h</div>
+                    <div class="metric-sub">+3,96% vs 2025</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Anul·lacions proj.</div>
+                    <div class="metric-value green">~600</div>
+                    <div class="metric-sub"><span class="up">-24,23% tendència — Gran millora</span></div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">LE Quirúrgica proj.</div>
+                    <div class="metric-value green">~1.700</div>
+                    <div class="metric-sub"><span class="up">27 fora garantia (controlat)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Projecció mensual d'intervencions</div>
+            <div class="chart-grid">
+                <div class="chart-box"><h3>IQ mensuals — Real 2025 vs Projecció 2026</h3><canvas id="chartIQMensual"></canvas></div>
+                <div class="chart-box"><h3>Hores ocupació quiròfan — Projecció 2026</h3><canvas id="chartIQHores"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Projecció per quiròfan</div>
+            <table class="data-table">
+                <thead>
+                    <tr><th>Quiròfan</th><th class="num">Real 2024</th><th class="num">Real 2025</th><th class="num">Tendència</th><th class="num">Proj. 2026</th><th>Alerta</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>2a Planta</td><td class="num">875</td><td class="num">1.006</td><td class="num"><span class="var-up">+14,97%</span></td><td class="num"><strong>1.157</strong></td><td><span class="semaphore sem-green"></span>Fort creixement</td></tr>
+                    <tr><td>Q1</td><td class="num">928</td><td class="num">866</td><td class="num"><span class="var-down">-6,68%</span></td><td class="num"><strong>808</strong></td><td><span class="semaphore sem-yellow"></span>En descens</td></tr>
+                    <tr><td>Q2</td><td class="num">982</td><td class="num">1.028</td><td class="num"><span class="var-up">+4,68%</span></td><td class="num"><strong>1.076</strong></td><td><span class="semaphore sem-green"></span>Creixement</td></tr>
+                    <tr><td>Q3</td><td class="num">1.239</td><td class="num">1.248</td><td class="num"><span class="var-up">+0,73%</span></td><td class="num"><strong>1.257</strong></td><td><span class="semaphore sem-green"></span>Estable</td></tr>
+                    <tr><td>CIR</td><td class="num">281</td><td class="num">300</td><td class="num"><span class="var-up">+6,76%</span></td><td class="num"><strong>320</strong></td><td><span class="semaphore sem-green"></span>Creixement</td></tr>
+                    <tr><td>DER</td><td class="num">455</td><td class="num">464</td><td class="num"><span class="var-up">+1,98%</span></td><td class="num"><strong>473</strong></td><td><span class="semaphore sem-green"></span>Estable</td></tr>
+                </tbody>
+            </table>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                <strong>Anàlisi:</strong> La 2a Planta és el quiròfan amb major creixement (+14,97%), probablement absorbint activitat. Q1 mostra un descens que cal monitoritzar. Les anul·lacions en reducció (-24,23%) és una dada molt positiva que indica millor gestió de la programació quirúrgica.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: CONSULTES -->
+    <!-- ============================================================ -->
+    <div id="screen-consultes" class="screen">
+        <div class="panel">
+            <div class="panel-title">CONSULTES EXTERNES — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Visites totals proj. 2026</div>
+                    <div class="metric-value">124.954</div>
+                    <div class="metric-sub"><span class="neutral">-0,08% — Pràcticament estable</span></div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Primeres visites proj.</div>
+                    <div class="metric-value green">44.563</div>
+                    <div class="metric-sub"><span class="up">+5,81% — Millora accessibilitat</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Rati 2es/1es proj.</div>
+                    <div class="metric-value blue">1,80</div>
+                    <div class="metric-sub">2025: 1,97 &middot; Millora continuada</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">% Virtuals proj.</div>
+                    <div class="metric-value green">21,5%</div>
+                    <div class="metric-sub"><span class="up">2025: 19,87% — Creixent</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Projecció mensual de visites</div>
+            <div class="chart-grid">
+                <div class="chart-box"><h3>Visites CEX — Real 2025 vs Projecció 2026</h3><canvas id="chartCEXMensual"></canvas></div>
+                <div class="chart-box"><h3>% Visites Virtuals — Projecció 2026</h3><canvas id="chartCEXVirtual"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">LLISTA D'ESPERA CEX — Projecció de risc per especialitat</div>
+            <div class="panel-note panel-note-red" style="margin-bottom:15px;">
+                <strong>ALERTA:</strong> Amb les tendències actuals, les següents especialitats projecten un empitjorament significatiu de la llista d'espera el 2026. Les marcades en vermell superen el llindar de garantia CatSalut.
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr><th>Especialitat</th><th class="num">En espera (des. 2025)</th><th class="num">Demora dies</th><th class="num">% Fora termini</th><th class="num">Flux net anual</th><th>Projecció</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="alert-row-red"><td>Clínica del Dolor</td><td class="num">672</td><td class="num">228</td><td class="num">75,00%</td><td class="num">+214</td><td><span class="semaphore sem-red"></span>Creixement incontrolat</td></tr>
+                    <tr class="alert-row-red"><td>Pneumologia</td><td class="num">336</td><td class="num">210</td><td class="num">73,21%</td><td class="num">-26</td><td><span class="semaphore sem-red"></span>Demora extrema</td></tr>
+                    <tr class="alert-row-red"><td>Al·lergologia</td><td class="num">370</td><td class="num">95</td><td class="num">50,27%</td><td class="num">+72</td><td><span class="semaphore sem-red"></span>Creixent + alta demora</td></tr>
+                    <tr class="alert-row"><td>Traumatologia</td><td class="num">928</td><td class="num">96</td><td class="num">33,51%</td><td class="num">-56</td><td><span class="semaphore sem-yellow"></span>Estabilitzant-se</td></tr>
+                    <tr class="alert-row"><td>Reumatologia</td><td class="num">189</td><td class="num">106</td><td class="num">47,09%</td><td class="num">+55</td><td><span class="semaphore sem-yellow"></span>Creixent</td></tr>
+                    <tr class="alert-row"><td>Oftalmologia</td><td class="num">576</td><td class="num">120</td><td class="num">21,53%</td><td class="num">+129</td><td><span class="semaphore sem-yellow"></span>Acumulant pacients</td></tr>
+                    <tr><td>Ginecologia</td><td class="num">486</td><td class="num">71</td><td class="num">19,96%</td><td class="num">+32</td><td><span class="semaphore sem-yellow"></span>Lleuger creixement</td></tr>
+                    <tr><td>ORL</td><td class="num">452</td><td class="num">72</td><td class="num">22,79%</td><td class="num">-210</td><td><span class="semaphore sem-green"></span>Reduint LE</td></tr>
+                    <tr><td>Cirurgia General</td><td class="num">108</td><td class="num">33</td><td class="num">0%</td><td class="num">-253</td><td><span class="semaphore sem-green"></span>Excel·lent gestió</td></tr>
+                    <tr><td>Dermatologia</td><td class="num">226</td><td class="num">65</td><td class="num">5,31%</td><td class="num">-276</td><td><span class="semaphore sem-green"></span>Reduint LE ràpidament</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: FARMÀCIA -->
+    <!-- ============================================================ -->
+    <div id="screen-farmacia" class="screen">
+        <div class="panel">
+            <div class="panel-title">FARMÀCIA — Projecció consum 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box alert-red">
+                    <div class="metric-label">Dermatologia MHDA proj.</div>
+                    <div class="metric-value red">772.945 &euro;</div>
+                    <div class="metric-sub"><span class="down">+30,66% — Creixement accelerat</span></div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">Al·lergologia MHDA proj.</div>
+                    <div class="metric-value warn">225.740 &euro;</div>
+                    <div class="metric-sub"><span class="down">+8,45%</span></div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Convalescència proj.</div>
+                    <div class="metric-value green">46.495 &euro;</div>
+                    <div class="metric-sub"><span class="up">-14,93% — En descens</span></div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Cirurgia General proj.</div>
+                    <div class="metric-value green">8.895 &euro;</div>
+                    <div class="metric-sub"><span class="up">-31,01% — Reducció important</span></div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-red" style="margin-top:15px;">
+                <strong>ALERTA — Despesa MHDA Dermatologia:</strong> El creixement del 30,66% anual de la medicació hospitalària de dispensació ambulatòria en Dermatologia és el principal risc pressupostari en farmàcia. Si es manté la tendència, el 2026 se superaran els 770.000€ només en aquesta partida. Cal revisar protocols de prescripció i negociar amb proveïdors.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: PADES -->
+    <!-- ============================================================ -->
+    <div id="screen-pades" class="screen">
+        <div class="panel">
+            <div class="panel-title">PADES — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Visites Pal·liatiu CEX proj.</div>
+                    <div class="metric-value blue">~4.800</div>
+                    <div class="metric-sub">2025: 4.628 &middot; Creixement moderat</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Visites Geriàtric CEX proj.</div>
+                    <div class="metric-value green">~120</div>
+                    <div class="metric-sub"><span class="up">Servei iniciat abril 2025 — En expansió</span></div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                <strong>Nota:</strong> El servei Geriàtric de PADES va començar l'abril de 2025. Amb 51 visites en 9 mesos, la projecció per a un any complet el 2026 és d'unes 120 visites. És un servei en fase de creixement — cal seguir-ne l'evolució per ajustar recursos.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: LABORATORI -->
+    <!-- ============================================================ -->
+    <div id="screen-laboratori" class="screen">
+        <div class="panel">
+            <div class="panel-title">LABORATORI — Projecció 2026 *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Proves totals proj.</div>
+                    <div class="metric-value blue">~580.000</div>
+                    <div class="metric-sub">Estimació basada en tendència general</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Proves urgents proj.</div>
+                    <div class="metric-value blue">~145.000</div>
+                    <div class="metric-sub">Correlacionat amb urgències (+3,51%)</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                * Projecció estimada. Pendents dades detallades de laboratori per afinar la projecció.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: REHABILITACIÓ -->
+    <!-- ============================================================ -->
+    <div id="screen-rehabilitacio" class="screen">
+        <div class="panel">
+            <div class="panel-title">REHABILITACIÓ — Projecció 2026 *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Sessions proj.</div>
+                    <div class="metric-value blue">~42.000</div>
+                    <div class="metric-sub">Estimació basada en tendència</div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">LE Rehabilitació</div>
+                    <div class="metric-value warn">531</div>
+                    <div class="metric-sub">4,33% fora termini — A vigilar</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                * Projecció estimada. La llista d'espera de Rehabilitació (531 pacients, 50 dies demora) es projecta estable si es manté l'activitat de 12 sessions/dia.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: DIAGNÒSTIC IMATGE -->
+    <!-- ============================================================ -->
+    <div id="screen-diagnostic" class="screen">
+        <div class="panel">
+            <div class="panel-title">DIAGNÒSTIC PER LA IMATGE — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Exploracions totals proj.</div>
+                    <div class="metric-value blue">~56.100</div>
+                    <div class="metric-sub">2025: 55.764 &middot; TAM estable (+0,6%)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">RX convencional proj.</div>
+                    <div class="metric-value blue">~38.500</div>
+                    <div class="metric-sub">Estable</div>
+                </div>
+                <div class="metric-box alert-green">
+                    <div class="metric-label">Ecografies proj.</div>
+                    <div class="metric-value green">~7.300</div>
+                    <div class="metric-sub">2025: 7.051 &middot; Creixent</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                Projecció basada en TAM (Tendència Anual Mòbil) del 2025. L'activitat de diagnòstic per imatge es projecta estable amb lleuger creixement en ecografies.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: HOSPITAL DE DIA -->
+    <!-- ============================================================ -->
+    <div id="screen-hospdia" class="screen">
+        <div class="panel">
+            <div class="panel-title">HOSPITAL DE DIA / INTERMÈDIA — Projecció 2026</div>
+            <div class="metrics-grid">
+                <div class="metric-box alert-green">
+                    <div class="metric-label">HD Psicogeriatric est. proj.</div>
+                    <div class="metric-value green">6.843</div>
+                    <div class="metric-sub"><span class="up">+10,64% tendència — Supera pressupost</span></div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">HD Geriàtric est. proj.</div>
+                    <div class="metric-value blue">2.392</div>
+                    <div class="metric-sub">+1,37% &middot; Estable</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Convalescència est. proj.</div>
+                    <div class="metric-value blue">11.447</div>
+                    <div class="metric-sub">+3,54% &middot; Lleuger creixement</div>
+                </div>
+                <div class="metric-box alert-warn">
+                    <div class="metric-label">Llarga Estada est. proj.</div>
+                    <div class="metric-value warn">15.923</div>
+                    <div class="metric-sub"><span class="down">-1,21% — Lleuger descens</span></div>
+                </div>
+            </div>
+            <table class="data-table" style="margin-top:20px;">
+                <thead>
+                    <tr><th>Servei</th><th class="num">Pressupost</th><th class="num">Real 2025</th><th class="num">% Pressup.</th><th class="num">Proj. 2026</th><th>Tendència</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>HD Geriàtric (estades)</td><td class="num">2.470</td><td class="num">2.360</td><td class="num">95,55%</td><td class="num">2.392</td><td><span class="semaphore sem-yellow"></span>Sota pressupost</td></tr>
+                    <tr><td>HD Psicogeriatric (estades)</td><td class="num">5.928</td><td class="num">6.185</td><td class="num">104,34%</td><td class="num">6.843</td><td><span class="semaphore sem-green"></span>Supera pressupost</td></tr>
+                    <tr><td>Convalescència (estades)</td><td class="num">11.595</td><td class="num">11.056</td><td class="num">95,35%</td><td class="num">11.447</td><td><span class="semaphore sem-yellow"></span>Sota pressupost</td></tr>
+                    <tr><td>Llarga Estada (estades)</td><td class="num">16.507</td><td class="num">16.118</td><td class="num">97,64%</td><td class="num">15.923</td><td><span class="semaphore sem-yellow"></span>Lleuger descens</td></tr>
+                    <tr><td>Pal·liatius (altes)</td><td class="num">38</td><td class="num">62</td><td class="num">163,16%</td><td class="num">~50</td><td><span class="semaphore sem-green"></span>Supera pressupost</td></tr>
+                    <tr><td>Subaguts (altes)</td><td class="num">83</td><td class="num">84</td><td class="num">101,20%</td><td class="num">~90</td><td><span class="semaphore sem-green"></span>En pressupost</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: DIÀLISI -->
+    <!-- ============================================================ -->
+    <div id="screen-dialisi" class="screen">
+        <div class="panel">
+            <div class="panel-title">DIÀLISI — Projecció 2026 *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Sessions proj.</div>
+                    <div class="metric-value blue">~4.800</div>
+                    <div class="metric-sub">Estimació basada en capacitat</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Pacients actius proj.</div>
+                    <div class="metric-value blue">~35</div>
+                    <div class="metric-sub">Estable</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                * Projecció estimada. Servei amb demanda relativament estable condicionada per la població amb malaltia renal crònica del territori.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN: TIC -->
+    <!-- ============================================================ -->
+    <div id="screen-tic" class="screen">
+        <div class="panel">
+            <div class="panel-title">TIC — Projecció 2026 *</div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Incidències proj.</div>
+                    <div class="metric-value blue">~3.200</div>
+                    <div class="metric-sub">Estimació basada en tendència</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Temps resolució proj.</div>
+                    <div class="metric-value blue">~24h</div>
+                    <div class="metric-sub">Estable</div>
+                </div>
+            </div>
+            <div class="panel-note panel-note-blue" style="margin-top:15px;">
+                * Projecció estimada. Pendents dades detallades del servei TIC per afinar la projecció.
+            </div>
+        </div>
+    </div>
+
+</div><!-- /container -->
+
+<script>
+// =============================================
+// NAVIGATION
+// =============================================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// =============================================
+// DATA — Real 2025 monthly
+// =============================================
+const months = ['Gen','Feb','Mar','Abr','Mai','Jun','Jul','Ago','Set','Oct','Nov','Des'];
+
+const urg2025 = [2717,2526,2674,2533,2659,2792,2828,2921,2546,2698,2596,2905];
+const altesTot2025 = [635,542,660,502,611,508,468,432,441,686,600,555];
+const altesConv2025 = [330,285,339,290,301,255,304,264,247,355,334,327];
+const altesCMA2025 = [273,224,292,187,283,234,141,148,172,307,242,207];
+
+// Occupancy 2025 (monthly averages from data)
+const ocupP4_2025 = [17.5,14.0,16.3,14.8,12.5,13.7,15.8,12.1,12.7,14.8,14.5,17.9];
+const ocupP5_2025 = [18.8,17.5,18.6,16.5,16.3,15.9,17.4,17.0,15.5,17.9,17.0,18.7];
+
+// IQ monthly 2025 (from chirurgica data, estimated distribution)
+const iq2025 = [468,390,486,370,460,385,335,310,340,510,430,443];
+
+// CEX monthly 2025 (estimated distribution from total 125,054)
+const cex2025 = [11200,10100,11500,9800,11000,10200,9500,8200,9600,12000,11100,10854];
+
+// Virtual % monthly 2025 (estimated trend)
+const virtualPct2025 = [18.5,18.8,19.2,19.0,19.5,19.8,20.0,20.5,20.2,20.5,20.8,21.0];
+
+// =============================================
+// PROJECTION — Apply trend + seasonality
+// =============================================
+function project(data, trendPct) {
+    const total2025 = data.reduce((a,b) => a+b, 0);
+    const total2026 = total2025 * (1 + trendPct/100);
+    return data.map(v => Math.round(v * total2026 / total2025));
+}
+
+const urg2026 = project(urg2025, 3.51);
+const altesTot2026 = project(altesTot2025, -0.45);
+const iq2026 = project(iq2025, 1.50);
+const cex2026 = project(cex2025, -0.08);
+const virtualPct2026 = virtualPct2025.map(v => Math.round((v + 1.6)*10)/10); // +1.6pp trend
+
+// Occupancy projected (slight decrease trend -1.4%)
+const ocupP4_2026 = ocupP4_2025.map(v => Math.round((v * 0.986)*10)/10);
+const ocupP5_2026 = ocupP5_2025.map(v => Math.round((v * 0.986)*10)/10);
+
+// IQ hours monthly 2025 (estimated, total 3475h)
+const iqH2025 = [330,280,340,260,320,280,250,220,260,370,305,260];
+const iqH2026 = project(iqH2025, 3.96);
+
+// =============================================
+// CHART DEFAULTS
+// =============================================
+Chart.defaults.font.family = '"IBM Plex Sans","Source Sans 3","Segoe UI",sans-serif';
+Chart.defaults.font.size = 13;
+
+const blue = '#0095DA';
+const blueTr = 'rgba(0,149,218,0.15)';
+const orange = '#FF8C00';
+const orangeTr = 'rgba(255,140,0,0.15)';
+const red = '#ff4d4f';
+const green = '#52c41a';
+
+function dualChart(canvasId, label1, data1, label2, data2, threshold, thresholdLabel) {
+    const datasets = [
+        { label: label1, data: data1, borderColor: blue, backgroundColor: blueTr, fill: true, tension: 0.3, pointRadius: 4 },
+        { label: label2, data: data2, borderColor: orange, backgroundColor: orangeTr, fill: true, borderDash: [8,4], tension: 0.3, pointRadius: 4 }
+    ];
+    if (threshold) {
+        datasets.push({
+            label: thresholdLabel || 'Llindar',
+            data: Array(12).fill(threshold),
+            borderColor: red,
+            borderDash: [4,4],
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false
+        });
+    }
+    new Chart(document.getElementById(canvasId), {
+        type: 'line',
+        data: { labels: months, datasets },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: false } }
+        }
+    });
+}
+
+function barDualChart(canvasId, label1, data1, label2, data2) {
+    new Chart(document.getElementById(canvasId), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                { label: label1, data: data1, backgroundColor: blue, borderRadius: 4 },
+                { label: label2, data: data2, backgroundColor: orange, borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: false } }
+        }
+    });
+}
+
+// =============================================
+// RENDER CHARTS
+// =============================================
+// RESUM
+dualChart('chartResumUrg', 'Real 2025', urg2025, 'Projecció 2026', urg2026, 3000, 'Llindar 3.000/mes');
+barDualChart('chartResumAltes', 'Real 2025', altesTot2025, 'Projecció 2026', altesTot2026);
+barDualChart('chartResumIQ', 'Real 2025', iq2025, 'Projecció 2026', iq2026);
+dualChart('chartResumCEX', 'Real 2025', cex2025, 'Projecció 2026', cex2026);
+
+// URGÈNCIES
+dualChart('chartUrgMensual', 'Real 2025', urg2025, 'Projecció 2026', urg2026, 3000, 'Llindar 3.000/mes');
+
+const urgDia2026 = urg2026.map((v,i) => {
+    const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+    return Math.round(v/daysInMonth[i]*10)/10;
+});
+new Chart(document.getElementById('chartUrgDia'), {
+    type: 'bar',
+    data: {
+        labels: months,
+        datasets: [
+            { label: 'Urgències/dia proj. 2026', data: urgDia2026, backgroundColor: urgDia2026.map(v => v > 95 ? orange : blue), borderRadius: 4 },
+            { label: 'Llindar 100/dia', data: Array(12).fill(100), type: 'line', borderColor: red, borderDash: [4,4], borderWidth: 2, pointRadius: 0, fill: false }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: false, suggestedMin: 80 } }
+    }
+});
+
+// HOSPITALITZACIÓ
+barDualChart('chartHospAltes', 'Real 2025', altesTot2025, 'Projecció 2026', altesTot2026);
+
+new Chart(document.getElementById('chartHospOcup'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [
+            { label: 'Planta 4ª 2025', data: ocupP4_2025, borderColor: blue, tension: 0.3, pointRadius: 3 },
+            { label: 'Planta 4ª 2026 proj.', data: ocupP4_2026, borderColor: blue, borderDash: [6,3], tension: 0.3, pointRadius: 3 },
+            { label: 'Planta 5ª 2025', data: ocupP5_2025, borderColor: orange, tension: 0.3, pointRadius: 3 },
+            { label: 'Planta 5ª 2026 proj.', data: ocupP5_2026, borderColor: orange, borderDash: [6,3], tension: 0.3, pointRadius: 3 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { title: { display: true, text: 'Llits ocupats (mitjana)' } } }
+    }
+});
+
+// QUIRÒFAN
+barDualChart('chartIQMensual', 'Real 2025', iq2025, 'Projecció 2026', iq2026);
+barDualChart('chartIQHores', 'Real 2025 (h)', iqH2025, 'Projecció 2026 (h)', iqH2026);
+
+// CONSULTES
+dualChart('chartCEXMensual', 'Real 2025', cex2025, 'Projecció 2026', cex2026);
+
+new Chart(document.getElementById('chartCEXVirtual'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [
+            { label: '% Virtual 2025', data: virtualPct2025, borderColor: blue, backgroundColor: blueTr, fill: true, tension: 0.3 },
+            { label: '% Virtual 2026 proj.', data: virtualPct2026, borderColor: green, backgroundColor: 'rgba(82,196,26,0.15)', fill: true, borderDash: [6,3], tension: 0.3 },
+            { label: 'Objectiu 25%', data: Array(12).fill(25), borderColor: orange, borderDash: [4,4], borderWidth: 2, pointRadius: 0, fill: false }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { title: { display: true, text: '%' }, suggestedMin: 15, suggestedMax: 30 } }
+    }
+});
+
+</script>
+</body>
+</html>
